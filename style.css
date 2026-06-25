@@ -10,181 +10,247 @@ body {
 }
 
 .app {
+  width: 100%;
   max-width: 430px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 10px 12px;
-  background: #ffffff;
+  padding: 8px 10px;
+  background: #fff;
 }
 
-header {
+.header {
   text-align: center;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
 }
 
 .logo {
-  width: 58px;
-  height: 58px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
-  margin-bottom: 2px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 22px;
-  color: #b22222;
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-h2 {
-  margin: 4px 0 0;
-  font-size: 18px;
-  color: #111;
-  font-weight: 800;
-  line-height: 1.1;
-}
-
-h3 {
-  margin: 2px 0 0;
-  font-size: 15px;
-  color: #111;
-  font-weight: 700;
-  line-height: 1.1;
-}
-
-.input-box {
-  margin: 8px 0;
-}
-
-label {
   display: block;
+  margin: 0 auto 2px;
+}
+
+.company {
+  color: #b22222;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.05;
+}
+
+.title-ms {
+  margin-top: 3px;
+  color: #111;
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.05;
+}
+
+.title-cn {
+  margin-top: 2px;
+  color: #111;
   font-size: 14px;
-  font-weight: 700;
-  margin-bottom: 4px;
+  font-weight: 750;
+  line-height: 1.05;
 }
 
-input {
-  width: 100%;
-  height: 46px;
-  padding: 0 12px;
-  font-size: 24px;
-  font-weight: 800;
-  border: 2px solid #1e5631;
-  border-radius: 10px;
-  outline: none;
-}
-
-.price-list {
-  border: 1px solid #d7dfd4;
-  border-radius: 10px;
-  overflow: hidden;
+.input-section {
   margin-top: 8px;
 }
 
-.row {
+label {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  margin-bottom: 4px;
+}
+
+label span {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+label small {
+  font-size: 13px;
+  font-weight: 700;
+  color: #444;
+}
+
+.input-wrap {
+  height: 43px;
+  border: 2px solid #1e5631;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.input-wrap span {
+  padding-left: 11px;
+  font-size: 20px;
+  font-weight: 900;
+  color: #1e5631;
+}
+
+input {
+  flex: 1;
+  height: 100%;
+  border: none;
+  outline: none;
+  padding: 0 8px;
+  font-size: 23px;
+  font-weight: 900;
+  min-width: 0;
+}
+
+#clearBtn {
+  width: 38px;
+  height: 100%;
+  border: none;
+  background: #f1f1f1;
+  font-size: 26px;
+  font-weight: 700;
+  color: #555;
+}
+
+.price-list {
+  margin-top: 8px;
+  border: 1px solid #d8dfd4;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.price-row {
+  min-height: 43px;
+  padding: 6px 9px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  min-height: 42px;
-  padding: 7px 10px;
-  border-bottom: 1px solid #e5ebe2;
-  font-size: 15px;
-  font-weight: 700;
+  border-bottom: 1px solid #e7ece4;
 }
 
-.row:last-child {
+.price-row:last-child {
   border-bottom: none;
 }
 
-.row strong {
-  font-size: 21px;
+.price-row span {
+  display: block;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.price-row small {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #555;
+  line-height: 1.1;
+}
+
+.price-row strong {
+  font-size: 20px;
+  font-weight: 950;
   color: #111;
   white-space: nowrap;
+  margin-left: 10px;
 }
 
-.row.main {
-  background: #eef7ef;
+.highlight {
+  background: #f2f8f1;
 }
 
-.row.main strong {
+.highlight strong {
   color: #b22222;
-  font-size: 24px;
+  font-size: 25px;
 }
 
-.row.minimum {
-  background: #fff7e6;
+.minimum {
+  background: #fff7e7;
 }
 
-button {
-  width: 100%;
-  height: 44px;
-  margin-top: 9px;
-  border: none;
-  border-radius: 10px;
-  background: #1e5631;
-  color: #fff;
-  font-size: 17px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-button:active {
-  transform: scale(0.98);
-}
-
-.sg-note {
-  margin: 7px 0 0;
+.sg-info {
+  margin-top: 7px;
+  border-radius: 8px;
+  background: #f7f7f7;
+  padding: 7px 9px;
   font-size: 11.5px;
-  color: #555;
   line-height: 1.25;
 }
 
-.manager-note {
-  margin: 4px 0 0;
-  font-size: 11.5px;
-  color: #b22222;
-  font-weight: 700;
+.sg-info summary {
+  cursor: pointer;
+  font-weight: 800;
+  color: #1e5631;
+}
+
+.sg-info p {
+  margin: 5px 0 0;
+}
+
+footer {
+  margin-top: 6px;
   text-align: center;
+  color: #b22222;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1.25;
 }
 
 @media (max-height: 720px) {
+  .app {
+    padding: 6px 9px;
+  }
+
   .logo {
-    width: 48px;
-    height: 48px;
-  }
-
-  h1 {
-    font-size: 20px;
-  }
-
-  h2 {
-    font-size: 16px;
-  }
-
-  h3 {
-    font-size: 13px;
-  }
-
-  input {
+    width: 42px;
     height: 42px;
-    font-size: 22px;
   }
 
-  .row {
-    min-height: 38px;
-    padding: 5px 9px;
-  }
-
-  .row strong {
+  .company {
     font-size: 19px;
   }
 
-  .row.main strong {
+  .title-ms {
+    font-size: 15px;
+  }
+
+  .title-cn {
+    font-size: 12.5px;
+  }
+
+  .input-wrap {
+    height: 39px;
+  }
+
+  input {
+    font-size: 21px;
+  }
+
+  .price-row {
+    min-height: 38px;
+    padding: 5px 8px;
+  }
+
+  .price-row span {
+    font-size: 12px;
+  }
+
+  .price-row small {
+    font-size: 11px;
+  }
+
+  .price-row strong {
+    font-size: 18px;
+  }
+
+  .highlight strong {
     font-size: 22px;
   }
 
-  button {
-    height: 40px;
+  .sg-info,
+  footer {
+    font-size: 10.5px;
   }
 }
