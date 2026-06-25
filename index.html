@@ -1,29 +1,75 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+  <main class="app">
+    <header>
+      <img src="images/logo.png" class="logo" alt="Lover Legend Gardening Logo">
 
-    <div class="container">
+      <h1>Lover Legend Gardening</h1>
+      <h2>Kalkulator Harga Bonsai</h2>
+      <h3>盆景价格计算器</h3>
+    </header>
 
-        <img src="images/logo.png" class="logo">
+    <section class="input-box">
+      <label for="retailPrice">Harga Retail / 门市价格</label>
+      <input type="text" id="retailPrice" placeholder="RM 928" inputmode="numeric">
+    </section>
 
-        <h1>Lover Legend Gardening</h1>
+    <section class="price-list">
+      <div class="row main">
+        <span>直播售价 / Harga Live</span>
+        <strong id="livePrice">RM0</strong>
+      </div>
 
-        <h2>Kalkulator Harga Bonsai</h2>
+      <div class="row">
+        <span>第二棵同木架</span>
+        <strong id="secondPrice">RM0</strong>
+      </div>
 
-        <h3>盆景价格计算器</h3>
+      <div class="row">
+        <span>东马木架+运费</span>
+        <strong id="eastPrice">RM0</strong>
+      </div>
 
-    </div>
+      <div class="row">
+        <span>东马第二棵</span>
+        <strong id="eastSecondPrice">RM0</strong>
+      </div>
 
-    <script src="script.js"></script>
+      <div class="row">
+        <span>新加坡</span>
+        <strong id="sgPrice">RM0</strong>
+      </div>
 
+      <div class="row">
+        <span>花圃自取</span>
+        <strong id="selfPickupPrice">RM0</strong>
+      </div>
+
+      <div class="row minimum">
+        <span>最低售价</span>
+        <strong id="minimumPrice">RM0</strong>
+      </div>
+    </section>
+
+    <button id="copyBtn">复制报价 / Salin Harga</button>
+
+    <p class="sg-note">
+      SG 运费自付：司机送上门时直接付款给司机。1掌约 SGD15，2掌约 SGD30，太高/太重另加。
+    </p>
+
+    <p class="manager-note">
+      仅供查看价格，付款必须交给管理方处理。
+    </p>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
