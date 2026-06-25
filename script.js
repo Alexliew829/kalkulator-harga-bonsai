@@ -9,10 +9,9 @@ function cleanNumber(value) {
   return Number(String(value).replace(/[^0-9.]/g, "")) || 0;
 }
 
-function roundToNearest100(value) {
-  return Math.round(value / 100) * 100;
+function roundToNearest50(value) {
+  return Math.round(value / 50) * 50;
 }
-
 function formatRM(value) {
   return (
     "RM" +
@@ -26,9 +25,9 @@ function formatRM(value) {
 function calculate() {
   const retail = cleanNumber(retailInput.value);
 
-  const livePrice = roundToNearest100(retail * 0.9);
+  const livePrice = roundToNearest50(retail * 0.9);
   const pickupPrice = livePrice > 500 ? livePrice - 50 : livePrice - 20;
-  const minimumPrice = roundToNearest100(retail * 0.8);
+  const minimumPrice = roundToNearest50(retail * 0.8);
 
   livePriceEl.textContent = formatRM(livePrice);
   pickupPriceEl.textContent = formatRM(pickupPrice);
