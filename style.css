@@ -64,22 +64,14 @@ body {
 }
 
 .input-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
 
-.input-title .cn,
-.input-title .ms {
-  font-size: 14px;
+.input-title span {
+  font-size: 19px;
   font-weight: 900;
+  color: #000;
 }
-
-.input-title .ms {
-  color: #444;
-}
-
 .input-wrap {
   height: 42px;
   border: 2px solid #1e5631;
@@ -148,22 +140,21 @@ input {
 
 .price-row .cn {
   display: block;
-  font-size: 13px;
+  font-size: 17px;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.15;
 }
 
 .price-row .ms {
   display: block;
-  margin-top: 2px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #555;
-  line-height: 1.1;
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 900;
+  color: #333;
+  line-height: 1.15;
 }
-
 .price-row strong {
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 900;
   white-space: nowrap;
   text-align: right;
@@ -176,7 +167,7 @@ input {
 
 .highlight strong {
   color: #b22222;
-  font-size: 23px;
+  font-size: 28px;
 }
 
 .minimum {
@@ -280,21 +271,20 @@ footer {
   }
 
   .price-row .cn {
-    font-size: 12px;
-  }
+  font-size: 15px;
+}
 
-  .price-row .ms {
-    font-size: 10.5px;
-  }
+.price-row .ms {
+  font-size: 13px;
+}
 
   .price-row strong {
-    font-size: 17px;
-  }
+  font-size: 20px;
+}
 
-  .highlight strong {
-    font-size: 21px;
-  }
-
+.highlight strong {
+  font-size: 25px;
+}
   .text-price span {
     font-size: 14px;
   }
