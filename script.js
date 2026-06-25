@@ -4,6 +4,7 @@ const clearBtn = document.getElementById("clearBtn");
 const livePriceEl = document.getElementById("livePrice");
 const pickupPriceEl = document.getElementById("pickupPrice");
 const minimumPriceEl = document.getElementById("minimumPrice");
+const sameRackPriceEl = document.getElementById("sameRackPrice");
 
 function cleanNumber(value) {
   return Number(String(value).replace(/[^0-9.]/g, "")) || 0;
