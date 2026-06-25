@@ -1,73 +1,106 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
   <main class="app">
-    <header>
-      <img src="images/logo.png" class="logo" alt="Lover Legend Gardening Logo">
+    <header class="header">
+      <img src="images/logo.png" class="logo" alt="Lover Legend Gardening Logo" />
 
-      <h1>Lover Legend Gardening</h1>
-      <h2>Kalkulator Harga Bonsai</h2>
-      <h3>盆景价格计算器</h3>
+      <div class="company">Lover Legend Gardening</div>
+      <div class="title-ms">Kalkulator Harga Bonsai</div>
+      <div class="title-cn">盆景价格计算器</div>
     </header>
 
-    <section class="input-box">
-      <label for="retailPrice">Harga Retail / 门市价格</label>
-      <input type="text" id="retailPrice" placeholder="RM 928" inputmode="numeric">
+    <section class="input-section">
+      <label for="retailPrice">
+        <span>Harga Retail</span>
+        <small>门市价格</small>
+      </label>
+
+      <div class="input-wrap">
+        <span>RM</span>
+        <input id="retailPrice" type="text" inputmode="decimal" placeholder="928" autocomplete="off" />
+        <button id="clearBtn" type="button">×</button>
+      </div>
     </section>
 
     <section class="price-list">
-      <div class="row main">
-        <span>直播售价 / Harga Live</span>
+      <div class="price-row highlight">
+        <div>
+          <span>Harga Live</span>
+          <small>直播售价</small>
+        </div>
         <strong id="livePrice">RM0</strong>
       </div>
 
-      <div class="row">
-        <span>第二棵同木架</span>
+      <div class="price-row">
+        <div>
+          <span>Pokok Kedua Rak Sama</span>
+          <small>第二棵同木架</small>
+        </div>
         <strong id="secondPrice">RM0</strong>
       </div>
 
-      <div class="row">
-        <span>东马木架+运费</span>
+      <div class="price-row">
+        <div>
+          <span>Sabah & Sarawak</span>
+          <small>东马木架 + 运费</small>
+        </div>
         <strong id="eastPrice">RM0</strong>
       </div>
 
-      <div class="row">
-        <span>东马第二棵</span>
+      <div class="price-row">
+        <div>
+          <span>Pokok Kedua S&S</span>
+          <small>东马第二棵</small>
+        </div>
         <strong id="eastSecondPrice">RM0</strong>
       </div>
 
-      <div class="row">
-        <span>新加坡</span>
+      <div class="price-row">
+        <div>
+          <span>Singapura</span>
+          <small>新加坡</small>
+        </div>
         <strong id="sgPrice">RM0</strong>
       </div>
 
-      <div class="row">
-        <span>花圃自取</span>
-        <strong id="selfPickupPrice">RM0</strong>
+      <div class="price-row">
+        <div>
+          <span>Ambil Sendiri</span>
+          <small>花圃自取</small>
+        </div>
+        <strong id="pickupPrice">RM0</strong>
       </div>
 
-      <div class="row minimum">
-        <span>最低售价</span>
+      <div class="price-row minimum">
+        <div>
+          <span>Harga Minimum</span>
+          <small>最低售价</small>
+        </div>
         <strong id="minimumPrice">RM0</strong>
       </div>
     </section>
 
-    <button id="copyBtn">复制报价 / Salin Harga</button>
+    <details class="sg-info">
+      <summary>ⓘ Singapore Delivery / 新加坡运费说明</summary>
+      <p>Kos penghantaran Singapura ditanggung pembeli.<br>新加坡运费自付。</p>
+      <p>Bayaran terus kepada pemandu semasa penghantaran.<br>送上门时直接付款给司机。</p>
+      <p>1 tapak tangan: sekitar SGD15.<br>一个手掌大小：约 SGD15。</p>
+      <p>2 tapak tangan: sekitar SGD30.<br>两个手掌大小：约 SGD30。</p>
+      <p>Pokok terlalu besar / berat mungkin ada caj tambahan.<br>太高 / 太重可能另加费用。</p>
+    </details>
 
-    <p class="sg-note">
-      SG 运费自付：司机送上门时直接付款给司机。1掌约 SGD15，2掌约 SGD30，太高/太重另加。
-    </p>
-
-    <p class="manager-note">
+    <footer>
+      Untuk semakan harga sahaja. Pembayaran perlu dibuat kepada pihak pengurusan.<br>
       仅供查看价格，付款必须交给管理方处理。
-    </p>
+    </footer>
   </main>
 
   <script src="script.js"></script>
