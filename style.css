@@ -284,12 +284,19 @@ footer {
   }
 
   .text-price span {
-    font-size: 11.5px;
-  }
+    font-size: 14px;
+}
 
-  .text-price small,
-  .sg-info,
-  footer {
+.text-price small {
+    font-size: 12px;
+}
+
+.sg-info {
+    font-size: 11px;
+}
+
+footer {
     font-size: 10px;
-  }
+
+}
 }
