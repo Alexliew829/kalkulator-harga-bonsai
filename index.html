@@ -1,112 +1,389 @@
 <!DOCTYPE html>
 <html lang="ms">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="manifest" href="manifest.json">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
+
+<!-- App Icon / PWA -->
+<link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
 <meta name="theme-color" content="#1E5631">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Bonsai Harga">
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#f3f6f1;
+  font-family:Arial,"Microsoft YaHei",sans-serif;
+  color:#111;
+}
+
+.app{
+  max-width:430px;
+  min-height:100vh;
+  margin:0 auto;
+  padding:8px 10px;
+  background:#fff;
+}
+
+.header{
+  text-align:center;
+  margin-bottom:6px;
+}
+
+.logo{
+  width:44px;
+  height:44px;
+  object-fit:contain;
+  display:block;
+  margin:0 auto 2px;
+}
+
+.company{
+  color:#b22222;
+  font-size:20px;
+  font-weight:900;
+  line-height:1.05;
+}
+
+.title-ms{
+  margin-top:3px;
+  font-size:16px;
+  font-weight:900;
+  color:#111;
+}
+
+.title-cn{
+  margin-top:2px;
+  font-size:14px;
+  font-weight:800;
+  color:#111;
+}
+
+.input-section{
+  margin-top:8px;
+}
+
+.input-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:4px;
+}
+
+.input-title .cn{
+  font-size:14px;
+  font-weight:900;
+}
+
+.input-title .ms{
+  font-size:14px;
+  font-weight:900;
+  color:#444;
+}
+
+.input-wrap{
+  height:42px;
+  border:2px solid #1e5631;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+}
+
+.input-wrap span{
+  padding-left:11px;
+  font-size:19px;
+  font-weight:900;
+  color:#1e5631;
+}
+
+input{
+  flex:1;
+  height:100%;
+  border:none;
+  outline:none;
+  padding:0 8px;
+  font-size:22px;
+  font-weight:900;
+  min-width:0;
+}
+
+#clearBtn{
+  width:38px;
+  height:100%;
+  border:none;
+  background:#eee;
+  font-size:26px;
+  color:#555;
+}
+
+.price-list{
+  margin-top:8px;
+  border:1px solid #d8dfd4;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.price-row{
+  min-height:42px;
+  padding:6px 9px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid #e7ece4;
+}
+
+.price-row:last-child{
+  border-bottom:none;
+}
+
+.price-row .cn{
+  display:block;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.1;
+}
+
+.price-row .ms{
+  display:block;
+  margin-top:2px;
+  font-size:11.5px;
+  font-weight:800;
+  color:#555;
+  line-height:1.1;
+}
+
+.price-row strong{
+  font-size:18px;
+  font-weight:900;
+  white-space:nowrap;
+  margin-left:10px;
+  text-align:right;
+}
+
+.highlight{
+  background:#f2f8f1;
+}
+
+.highlight strong{
+  color:#b22222;
+  font-size:23px;
+}
+
+.minimum{
+  background:#fff7e7;
+}
+
+.text-price{
+  font-size:13px !important;
+  line-height:1.15;
+  max-width:150px;
+}
+
+.sg-info{
+  margin-top:7px;
+  border-radius:8px;
+  background:#f7f7f7;
+  padding:7px 9px;
+  font-size:11px;
+  line-height:1.25;
+}
+
+.sg-info summary{
+  cursor:pointer;
+  font-weight:900;
+  color:#1e5631;
+}
+
+.sg-info p{
+  margin:5px 0 0;
+}
+
+footer{
+  margin-top:6px;
+  text-align:center;
+  color:#b22222;
+  font-size:11px;
+  font-weight:900;
+  line-height:1.25;
+}
+
+.version{
+  color:#777;
+  font-size:10px;
+  margin-top:3px;
+}
+
+@media(max-height:720px){
+  .app{padding:6px 9px}
+  .logo{width:38px;height:38px}
+  .company{font-size:18px}
+  .title-ms{font-size:14px}
+  .title-cn{font-size:12px}
+  .input-wrap{height:38px}
+  input{font-size:20px}
+  .price-row{min-height:37px;padding:5px 8px}
+  .price-row .cn{font-size:12px}
+  .price-row .ms{font-size:10.5px}
+  .price-row strong{font-size:17px}
+  .highlight strong{font-size:21px}
+  .sg-info,footer{font-size:10px}
+}
+</style>
 </head>
+
 <body>
-  <main class="app">
-    <header class="header">
-      <img src="images/logo.png" class="logo" alt="Lover Legend Gardening Logo" />
+<main class="app">
 
-      <div class="company">Lover Legend Gardening</div>
-      <div class="title-ms">Kalkulator Harga Bonsai</div>
-      <div class="title-cn">盆景价格计算器</div>
-    </header>
+  <header class="header">
+    <img src="images/logo.png" class="logo" alt="" onerror="this.style.display='none'">
+    <div class="company">Lover Legend Gardening</div>
+    <div class="title-ms">Kalkulator Harga Bonsai</div>
+    <div class="title-cn">盆景价格计算器</div>
+  </header>
 
-    <section class="input-section">
-      <label for="retailPrice">
-        <span>Harga Retail</span>
-        <small>门市价格</small>
-      </label>
+  <section class="input-section">
+    <div class="input-title">
+      <span class="cn">门市价格</span>
+      <span class="ms">Harga Retail</span>
+    </div>
 
-      <div class="input-wrap">
-        <span>RM</span>
-        <input id="retailPrice" type="text" inputmode="decimal" placeholder="928" autocomplete="off" />
-        <button id="clearBtn" type="button">×</button>
+    <div class="input-wrap">
+      <span>RM</span>
+      <input id="retailPrice" type="text" inputmode="decimal" placeholder="0.00">
+      <button id="clearBtn" type="button">×</button>
+    </div>
+  </section>
+
+  <section class="price-list">
+
+    <div class="price-row highlight">
+      <div>
+        <span class="cn">直播售价</span>
+        <span class="ms">Harga Live</span>
       </div>
-    </section>
+      <strong id="livePrice">RM0.00</strong>
+    </div>
 
-    <section class="price-list">
-      <div class="price-row highlight">
-        <div>
-          <span>Harga Live</span>
-          <small>直播售价</small>
-        </div>
-        <strong id="livePrice">RM0</strong>
+    <div class="price-row">
+      <div>
+        <span class="cn">第二棵同木架</span>
+        <span class="ms">Pokok Kedua Rangka Sama</span>
       </div>
+      <strong>-RM50.00</strong>
+    </div>
 
-      <div class="price-row">
-        <div>
-          <span>Pokok Kedua Rak Sama</span>
-          <small>第二棵同木架</small>
-        </div>
-        <strong id="secondPrice">RM0</strong>
+    <div class="price-row">
+      <div>
+        <span class="cn">东马木架 + 运费</span>
+        <span class="ms">Sabah, Sarawak & Labuan</span>
       </div>
+      <strong>+RM300.00</strong>
+    </div>
 
-      <div class="price-row">
-        <div>
-          <span>Sabah & Sarawak</span>
-          <small>东马木架 + 运费</small>
-        </div>
-        <strong id="eastPrice">RM0</strong>
+    <div class="price-row">
+      <div>
+        <span class="cn">东马第二棵</span>
+        <span class="ms">Pokok Kedua Sabah, Sarawak & Labuan</span>
       </div>
+      <strong>+RM400.00</strong>
+    </div>
 
-      <div class="price-row">
-        <div>
-          <span>Pokok Kedua S&S</span>
-          <small>东马第二棵</small>
-        </div>
-        <strong id="eastSecondPrice">RM0</strong>
+    <div class="price-row">
+      <div>
+        <span class="cn">新加坡</span>
+        <span class="ms">Singapura</span>
       </div>
+      <strong class="text-price">直播售价<br>+ 运费自付</strong>
+    </div>
 
-      <div class="price-row">
-        <div>
-          <span>Singapura</span>
-          <small>新加坡</small>
-        </div>
-        <strong id="sgPrice">RM0</strong>
+    <div class="price-row">
+      <div>
+        <span class="cn">花圃自取</span>
+        <span class="ms">Ambil Sendiri di Nursery</span>
       </div>
+      <strong id="pickupPrice">RM0.00</strong>
+    </div>
 
-      <div class="price-row">
-        <div>
-          <span>Ambil Sendiri</span>
-          <small>花圃自取</small>
-        </div>
-        <strong id="pickupPrice">RM0</strong>
+    <div class="price-row minimum">
+      <div>
+        <span class="cn">最低售价</span>
+        <span class="ms">Harga Minimum</span>
       </div>
+      <strong id="minimumPrice">RM0.00</strong>
+    </div>
 
-      <div class="price-row minimum">
-        <div>
-          <span>Harga Minimum</span>
-          <small>最低售价</small>
-        </div>
-        <strong id="minimumPrice">RM0</strong>
-      </div>
-    </section>
+  </section>
 
-    <details class="sg-info">
-      <summary>ⓘ Singapore Delivery / 新加坡运费说明</summary>
-      <p>Kos penghantaran Singapura ditanggung pembeli.<br>新加坡运费自付。</p>
-      <p>Bayaran terus kepada pemandu semasa penghantaran.<br>送上门时直接付款给司机。</p>
-      <p>1 tapak tangan: sekitar SGD15.<br>一个手掌大小：约 SGD15。</p>
-      <p>2 tapak tangan: sekitar SGD30.<br>两个手掌大小：约 SGD30。</p>
-      <p>Pokok terlalu besar / berat mungkin ada caj tambahan.<br>太高 / 太重可能另加费用。</p>
-    </details>
+  <details class="sg-info">
+    <summary>ⓘ 新加坡运费说明 / Singapore Delivery</summary>
+    <p>新加坡运费自付。<br>Kos penghantaran Singapura ditanggung pembeli.</p>
+    <p>送上门时直接付款给司机。<br>Bayaran terus kepada pemandu semasa penghantaran.</p>
+    <p>一个手掌大小：约 SGD15。<br>1 tapak tangan: sekitar SGD15.</p>
+    <p>两个手掌大小：约 SGD30。<br>2 tapak tangan: sekitar SGD30.</p>
+    <p>太高 / 太重可能另加费用。<br>Pokok terlalu besar / berat mungkin ada caj tambahan.</p>
+  </details>
 
-    <footer>
-      Untuk semakan harga sahaja. Pembayaran perlu dibuat kepada pihak pengurusan.<br>
-      仅供查看价格，付款必须交给管理方处理。
-    </footer>
-  </main>
+  <footer>
+    仅供查看价格，付款必须交给管理方处理。<br>
+    Untuk semakan harga sahaja. Pembayaran perlu dibuat kepada pihak pengurusan.
+    <div class="version">Version 1.0</div>
+  </footer>
 
-  <script src="script.js"></script>
+</main>
+
+<script>
+const retailInput=document.getElementById("retailPrice");
+const clearBtn=document.getElementById("clearBtn");
+
+const livePriceEl=document.getElementById("livePrice");
+const pickupPriceEl=document.getElementById("pickupPrice");
+const minimumPriceEl=document.getElementById("minimumPrice");
+
+function cleanNumber(value){
+  return Number(String(value).replace(/[^0-9.]/g,""))||0;
+}
+
+function roundToNearest100(value){
+  return Math.round(value/100)*100;
+}
+
+function formatRM(value){
+  return "RM"+Number(value).toLocaleString("en-MY",{
+    minimumFractionDigits:2,
+    maximumFractionDigits:2
+  });
+}
+
+function calculate(){
+  const retail=cleanNumber(retailInput.value);
+
+  const livePrice=roundToNearest100(retail*0.9);
+  const pickupPrice=livePrice>500?livePrice-50:livePrice-20;
+  const minimumPrice=roundToNearest100(retail*0.8);
+
+  livePriceEl.textContent=formatRM(livePrice);
+  pickupPriceEl.textContent=formatRM(pickupPrice);
+  minimumPriceEl.textContent=formatRM(minimumPrice);
+}
+
+retailInput.addEventListener("input",calculate);
+
+clearBtn.addEventListener("click",function(){
+  retailInput.value="";
+  retailInput.focus();
+  calculate();
+});
+
+calculate();
+</script>
+
 </body>
 </html>
