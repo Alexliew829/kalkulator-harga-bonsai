@@ -285,18 +285,17 @@ footer {
 
   .text-price span {
     font-size: 14px;
-}
+  }
 
-.text-price small {
+  .text-price small {
     font-size: 12px;
-}
+  }
 
-.sg-info {
+  .sg-info {
     font-size: 11px;
-}
+  }
 
-footer {
+  footer {
     font-size: 10px;
-
-}
+  }
 }
