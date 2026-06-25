@@ -25,7 +25,13 @@ function formatRM(value) {
 function calculate() {
   const retail = cleanNumber(retailInput.value);
 
-  const livePrice = roundToNearest50(retail * 0.9);
+  let livePrice;
+
+if (retail <= 500) {
+    livePrice = retail;
+} else {
+    livePrice = roundToNearest50(retail * 0.9);
+}
   const pickupPrice = livePrice > 500 ? livePrice - 50 : livePrice - 20;
   const minimumPrice = roundToNearest50(retail * 0.8);
 
