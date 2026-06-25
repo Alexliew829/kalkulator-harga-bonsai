@@ -29,11 +29,11 @@ body {
 }
 
 .logo {
-  width: 44px;
-  height: 44px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   display: block;
-  margin: 0 auto 2px;
+  margin: 0 auto 4px;
 }
 
 .company {
@@ -235,16 +235,15 @@ footer {
   margin-top: 3px;
 }
 
-@media (max-height: 720px) {
+@media (max-width: 430px) {
   .app {
     padding: 6px 9px;
   }
 
-  .logo {
-    width: 38px;
-    height: 38px;
-  }
-
+ .logo {
+  width: 72px;
+  height: 72px;
+}
   .company {
     font-size: 18px;
   }
