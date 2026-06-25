@@ -1,0 +1,39 @@
+body{
+    margin:0;
+    padding:0;
+    background:#f4f7f3;
+    font-family:Arial,Helvetica,sans-serif;
+}
+
+.container{
+    max-width:700px;
+    margin:30px auto;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 5px 20px rgba(0,0,0,.15);
+    text-align:center;
+}
+
+.logo{
+    width:140px;
+    margin-bottom:15px;
+}
+
+h1{
+    margin:5px 0;
+    color:#1E5631;
+    font-size:34px;
+}
+
+h2{
+    margin:10px 0 5px;
+    color:#222;
+    font-size:28px;
+}
+
+h3{
+    margin-top:0;
+    color:#777;
+    font-weight:normal;
+}
