@@ -2,9 +2,9 @@ const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
 const livePriceEl = document.getElementById("livePrice");
+const sameRackPriceEl = document.getElementById("sameRackPrice");
 const pickupPriceEl = document.getElementById("pickupPrice");
 const minimumPriceEl = document.getElementById("minimumPrice");
-const sameRackPriceEl = document.getElementById("sameRackPrice");
 
 function cleanNumber(value) {
   return Number(String(value).replace(/[^0-9.]/g, "")) || 0;
@@ -13,6 +13,7 @@ function cleanNumber(value) {
 function roundToNearest50(value) {
   return Math.round(value / 50) * 50;
 }
+
 function formatRM(value) {
   return (
     "RM" +
@@ -26,13 +27,16 @@ function formatRM(value) {
 function calculate() {
   const retail = cleanNumber(retailInput.value);
 
-let livePrice;
+  let livePrice;
 
-if (retail < 500) {
+  if (retail < 500) {
     livePrice = retail;
-} else {
+  } else {
     livePrice = roundToNearest50(retail * 0.90);
-}
+  }
+
+  sameRackPriceEl.textContent = livePrice > 500 ? "-RM50.00" : "-";
+
   const pickupPrice = livePrice > 500 ? livePrice - 50 : livePrice - 20;
   const minimumPrice = roundToNearest50(retail * 0.8);
 
