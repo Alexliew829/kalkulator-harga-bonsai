@@ -27,7 +27,7 @@ function calculate() {
 
  let livePrice;
 
-if (retail < 500) {
+if (retail < 550) {
     livePrice = roundToNearest50(retail * 0.95);
 } else {
     livePrice = roundToNearest50(retail * 0.90);
