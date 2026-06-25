@@ -35,9 +35,9 @@ function calculate() {
     livePrice = roundToNearest50(retail * 0.90);
   }
 
-  sameRackPriceEl.textContent = livePrice > 500 ? "-RM50.00" : "-";
+ sameRackPriceEl.textContent = livePrice >= 500 ? "-RM50.00" : "-";
 
-  const pickupPrice = livePrice > 500 ? livePrice - 50 : livePrice - 20;
+  const pickupPrice = livePrice >= 500 ? livePrice - 50 : livePrice - 20;
   const minimumPrice = roundToNearest50(retail * 0.8);
 
   livePriceEl.textContent = formatRM(livePrice);
