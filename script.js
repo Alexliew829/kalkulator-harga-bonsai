@@ -47,7 +47,7 @@ function calculate() {
     pickupDiscount = 20;
   }
 
-  const pickupPrice = livePrice - pickupDiscount;
+ const pickupPrice = retail === 0 ? 0 : livePrice - pickupDiscount;
   const minimumPrice = roundToNearest50(livePrice * 0.85);
 
   livePriceEl.textContent = formatRM(livePrice);
