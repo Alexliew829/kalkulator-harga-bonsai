@@ -30,7 +30,7 @@ function getLivePrice(retail) {
   if (retail < 500) {
     return retail;
   }
-  return roundDown100(retail * 0.9);
+  return roundDown100(retail * 0.92);
 }
 
 function calculate() {
