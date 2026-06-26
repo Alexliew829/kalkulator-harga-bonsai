@@ -13,6 +13,9 @@ function cleanNumber(value) {
 function roundToNearest50(value) {
   return Math.round(value / 50) * 50;
 }
+function roundToNearest10(value) {
+  return Math.round(value / 10) * 10;
+}
 function roundDown100(value) {
   return Math.floor(value / 100) * 100;
 }
@@ -27,7 +30,7 @@ function formatRM(value) {
 }
 
 function getLivePrice(retail) {
-  if (retail < 500) {
+if (retail <= 500) {
     return retail;
   }
   return roundDown100(retail * 0.92);
@@ -50,7 +53,10 @@ function calculate() {
   }
 
  const pickupPrice = retail === 0 ? 0 : livePrice - pickupDiscount;
-  const minimumPrice = roundToNearest50(livePrice * 0.85);
+const minimumPrice =
+  retail <= 500
+    ? roundToNearest10(retail * 0.9)
+    : roundToNearest50(livePrice * 0.85);
 
   livePriceEl.textContent = formatRM(livePrice);
   sameRackPriceEl.textContent = sameRackDiscount;
