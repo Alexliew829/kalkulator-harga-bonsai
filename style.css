@@ -19,7 +19,7 @@ body {
   max-width: 430px;
   min-height: 100vh;
   margin: 0 auto;
-  padding: 8px 10px 7px;
+  padding: 7px 9px;
   background: #fff;
 }
 
@@ -28,42 +28,43 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 2px;
+  margin-bottom: 3px;
 }
-.header-text {
-  text-align: left;
-}
+
 .logo {
-  width: 95px;
-  height: 95px;
+  width: 92px;
+  height: 92px;
   object-fit: contain;
   display: block;
-  margin: 0;
   flex-shrink: 0;
 }
 
-.company {
-  margin-top:1px;
-  color: #b22222;
-  font-size: 20px;
+.header-text {
+  text-align: left;
+  min-width: 0;
+}
+
+.title-cn {
+  font-size: 21px;
   font-weight: 900;
+  color: #111;
   line-height: 1.05;
 }
 
 .title-ms {
-  margin-top:0;
-  font-size: 20px;
+  margin-top: 2px;
+  font-size: 18px;
   font-weight: 900;
   color: #111;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
-.title-cn {
-  margin-top:0;
-  font-size: 20px;
+.company {
+  margin-top: 3px;
+  color: #b22222;
+  font-size: 17px;
   font-weight: 900;
-  color: #111;
-  line-height: 1.1;
+  line-height: 1.05;
 }
 
 .input-section {
@@ -71,14 +72,12 @@ body {
 }
 
 .input-title {
-  margin-bottom: 2px;
-}
-
-.input-title span {
+  margin-bottom: 3px;
   font-size: 19px;
   font-weight: 900;
   color: #000;
 }
+
 .input-wrap {
   height: 42px;
   border: 2px solid #1e5631;
@@ -91,7 +90,7 @@ body {
 
 .rm-prefix {
   padding-left: 11px;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 900;
   color: #1e5631;
 }
@@ -102,7 +101,7 @@ input {
   border: none;
   outline: none;
   padding: 0 8px;
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 900;
   min-width: 0;
   color: #111;
@@ -121,15 +120,15 @@ input {
 }
 
 .price-list {
-  margin-top: 5px;
+  margin-top: 6px;
   border: 1px solid #d8dfd4;
   border-radius: 10px;
   overflow: hidden;
 }
 
 .price-row {
-  min-height: 42px;
-  padding: 6px 9px;
+  min-height: 41px;
+  padding: 5px 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -147,21 +146,22 @@ input {
 
 .price-row .cn {
   display: block;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.12;
 }
 
 .price-row .ms {
   display: block;
-  margin-top: 3px;
-  font-size: 14px;
+  margin-top: 2px;
+  font-size: 13px;
   font-weight: 900;
   color: #333;
-  line-height: 1.15;
+  line-height: 1.12;
 }
+
 .price-row strong {
-  font-size: 22px;
+  font-size: 21px;
   font-weight: 900;
   white-space: nowrap;
   text-align: right;
@@ -174,131 +174,148 @@ input {
 
 .highlight strong {
   color: #b22222;
-  font-size: 28px;
+  font-size: 27px;
 }
 
 .minimum {
   background: #fff7e7;
 }
 
-.text-price {
-  white-space: normal !important;
-  max-width: 166px;
-  line-height: 1.1;
+.sg-section {
+  margin-top: 8px;
 }
 
-.text-price span{
-    display:block;
-    font-size:16px;
-    font-weight:900;
-    color:#B22222;
+.sg-title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 900;
+  color: #111;
+  line-height: 1.15;
 }
 
-.text-price small{
-    display:block;
-    margin-top:2px;
-    font-size:13px;
-    font-weight:900;
-    color:#B22222;
+.sg-live {
+  margin-top: 3px;
+  text-align: center;
+  color: #b22222;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.sg-live span {
+  display: block;
+  font-size: 16px;
+}
+
+.sg-live small {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #b22222;
 }
 
 .sg-info {
-  margin-top: 7px;
+  margin-top: 6px;
   border-radius: 8px;
   background: #f7f7f7;
-  padding: 9px 10px;
-  font-size: 15px;
-  font-weight: 900;
-  color: #000;
-  line-height: 1.45;
-}
-.sg-info b {
+  padding: 8px 10px;
   font-size: 14px;
   font-weight: 900;
   color: #000;
+  line-height: 1.35;
 }
 
 .sg-info p {
-  margin: 7px 0;
-  color: #000;
-  font-weight: 700;
+  margin: 6px 0;
 }
 
 footer {
-  margin-top: 10px;
+  margin-top: 7px;
   text-align: center;
   color: #b22222;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 900;
-  line-height: 1.5;
+  line-height: 1.35;
 }
+
 .version {
   color: #555;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  margin-top: 6px;
+  margin-top: 3px;
 }
 
 @media (max-width: 430px) {
   .app {
-    padding: 6px 9px;
+    padding: 6px 8px;
   }
 
- .logo {
-  width: 85px;
-  height: 85px;
-}
-
-.company {
-  font-size: 16px;
-}
-
-.title-ms {
-  font-size: 17px;
-}
-
-.title-cn {
-  font-size: 19px;
-}
-
-  .input-wrap {
-    height: 38px;
+  .header {
+    gap: 8px;
   }
 
-  input {
+  .logo {
+    width: 84px;
+    height: 84px;
+  }
+
+  .title-cn {
     font-size: 20px;
   }
 
+  .title-ms {
+    font-size: 16px;
+  }
+
+  .company {
+    font-size: 15px;
+  }
+
+  .input-title {
+    font-size: 18px;
+  }
+
+  .input-wrap {
+    height: 39px;
+  }
+
+  input {
+    font-size: 21px;
+  }
+
   .price-row {
-    min-height: 37px;
-    padding: 5px 8px;
+    min-height: 38px;
+    padding: 5px 7px;
   }
 
   .price-row .cn {
-  font-size: 15px;
-}
-
-.price-row .ms {
-  font-size: 13px;
-}
-
-  .price-row strong {
-  font-size: 20px;
-}
-
-.highlight strong {
-  font-size: 25px;
-}
-  .text-price span {
-    font-size: 14px;
+    font-size: 15px;
   }
 
-  .text-price small {
+  .price-row .ms {
+    font-size: 12px;
+  }
+
+  .price-row strong {
+    font-size: 19px;
+  }
+
+  .highlight strong {
+    font-size: 25px;
+  }
+
+  .sg-title,
+  .sg-live span {
+    font-size: 15px;
+  }
+
+  .sg-live small {
     font-size: 12px;
   }
 
   .sg-info {
     font-size: 13px;
+    padding: 7px 9px;
   }
 
   footer {
