@@ -36,12 +36,25 @@ function calculate() {
   const livePrice = getLivePrice(retail);
 
   const sameRackDiscount = livePrice >= 500 ? "-RM50.00" : "-";
-  const pickupPrice = livePrice >= 500 ? livePrice - 50 : livePrice - 20;
- const minimumPrice = roundToNearest50(livePrice * 0.85);
+
+  let pickupDiscount;
+
+  if (livePrice >= 2000) {
+    pickupDiscount = 100;
+  } else if (livePrice >= 500) {
+    pickupDiscount = 50;
+  } else {
+    pickupDiscount = 20;
+  }
+
+  const pickupPrice = livePrice - pickupDiscount;
+  const minimumPrice = roundToNearest50(livePrice * 0.85);
+
   livePriceEl.textContent = formatRM(livePrice);
   sameRackPriceEl.textContent = sameRackDiscount;
   pickupPriceEl.textContent = formatRM(pickupPrice);
   minimumPriceEl.textContent = formatRM(minimumPrice);
+}
 }
 
 retailInput.addEventListener("focus", function () {
