@@ -24,31 +24,29 @@ function formatRM(value) {
   );
 }
 
+function getLivePrice(retail) {
+  if (retail < 500) {
+    return retail;
+  }
+  return roundToNearest50(retail * 0.9);
+}
+
 function calculate() {
   const retail = cleanNumber(retailInput.value);
+  const livePrice = getLivePrice(retail);
 
-  let livePrice;
-
-  if (retail < 500) {
-    livePrice = retail;
-  } else {
-    livePrice = roundToNearest50(retail * 0.90);
-  }
-
- sameRackPriceEl.textContent = livePrice >= 500 ? "-RM50.00" : "-";
-
+  const sameRackDiscount = livePrice >= 500 ? "-RM50.00" : "-";
   const pickupPrice = livePrice >= 500 ? livePrice - 50 : livePrice - 20;
   const minimumPrice = roundToNearest50(retail * 0.8);
 
   livePriceEl.textContent = formatRM(livePrice);
+  sameRackPriceEl.textContent = sameRackDiscount;
   pickupPriceEl.textContent = formatRM(pickupPrice);
   minimumPriceEl.textContent = formatRM(minimumPrice);
 }
 
 retailInput.addEventListener("focus", function () {
-  if (cleanNumber(retailInput.value) === 0) {
-    retailInput.value = "";
-  }
+  retailInput.select();
 });
 
 retailInput.addEventListener("blur", function () {
@@ -60,6 +58,12 @@ retailInput.addEventListener("blur", function () {
 });
 
 retailInput.addEventListener("input", calculate);
+
+retailInput.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    retailInput.blur();
+  }
+});
 
 clearBtn.addEventListener("click", function () {
   retailInput.value = "0.00";
