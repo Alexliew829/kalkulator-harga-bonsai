@@ -176,7 +176,11 @@ input {
   color: #b22222;
   font-size: 27px;
 }
-
+.highlight .cn,
+.highlight .ms {
+  color: #B22222;
+  font-weight: 900;
+}
 .minimum {
   background: #fff7e7;
 }
