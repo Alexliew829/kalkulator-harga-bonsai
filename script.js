@@ -90,4 +90,6 @@ clearBtn.addEventListener("click", function () {
   calculate();
 });
 
+retailInput.value = "0.00";
 calculate();
+retailInput.focus();
