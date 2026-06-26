@@ -55,7 +55,6 @@ function calculate() {
   pickupPriceEl.textContent = formatRM(pickupPrice);
   minimumPriceEl.textContent = formatRM(minimumPrice);
 }
-}
 
 retailInput.addEventListener("focus", function () {
   retailInput.select();
