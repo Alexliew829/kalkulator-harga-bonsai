@@ -215,18 +215,18 @@ input {
 }
 
 .sg-info {
-  margin-top: 6px;
+  margin-top: 8px;
   border-radius: 8px;
   background: #f7f7f7;
-  padding: 8px 10px;
-  font-size: 14px;
+  padding: 10px 12px;
+  font-size: 17px;
   font-weight: 900;
-  color: #000;
-  line-height: 1.35;
+  color: #B22222;
+  line-height: 1.5;
 }
 
 .sg-info p {
-  margin: 6px 0;
+  margin: 12px 0;
 }
 
 footer {
