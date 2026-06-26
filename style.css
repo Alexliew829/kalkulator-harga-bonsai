@@ -177,9 +177,9 @@ input {
   font-size: 27px;
 }
 .highlight .cn,
-.highlight .ms {
-  color: #B22222;
-  font-weight: 900;
+.highlight .ms{
+    color:#B22222 !important;
+    font-weight:900;
 }
 .minimum {
   background: #fff7e7;
@@ -207,27 +207,6 @@ input {
     margin:0 0 2px;
 }
 
-.sg-live {
-  margin-top: 3px;
-  text-align: center;
- color:#0B5ED7;
-  font-weight: 900;
-  line-height: 1.15;
-}
-
-.sg-live span {
-  display: block;
-  font-size: 16px;
-}
-
-.sg-live small {
-  display: block;
-  margin-top: 2px;
-  font-size: 13px;
-  font-weight: 900;
-  color: #b22222;
-}
-
 .sg-info {
   margin-top: 2px;
   border-radius: 8px;
@@ -241,6 +220,7 @@ color: #0B5ED7;
 
 .sg-info p{
     margin:8px 0;
+   color:#0B5ED7;
 }
 
 footer {
