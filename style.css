@@ -121,7 +121,7 @@ input {
 }
 
 .price-list {
-  margin-top: 8px;
+  margin-top: 5px;
   border: 1px solid #d8dfd4;
   border-radius: 10px;
   overflow: hidden;
@@ -203,14 +203,14 @@ input {
 }
 
 .sg-info {
-  margin-top: 10px;
+  margin-top: 7px;
   border-radius: 8px;
   background: #f7f7f7;
-  padding: 12px;
-  font-size: 16px;
+  padding: 9px 10px;
+  font-size: 15px;
   font-weight: 900;
   color: #000;
-  line-height: 1.6;
+  line-height: 1.45;
 }
 .sg-info b {
   font-size: 14px;
@@ -219,7 +219,7 @@ input {
 }
 
 .sg-info p {
-  margin: 12px 0;
+  margin: 7px 0;
   color: #000;
   font-weight: 700;
 }
@@ -298,10 +298,10 @@ footer {
   }
 
   .sg-info {
-    font-size: 11px;
+    font-size: 13px;
   }
 
   footer {
-    font-size: 10px;
+    font-size: 12px;
   }
 }
