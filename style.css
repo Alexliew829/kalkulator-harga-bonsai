@@ -34,11 +34,12 @@ body {
   text-align: left;
 }
 .logo {
-  width: 110px;
-  height: 110px;
+  width: 95px;
+  height: 95px;
   object-fit: contain;
   display: block;
   margin: 0;
+  flex-shrink: 0;
 }
 
 .company {
@@ -66,11 +67,11 @@ body {
 }
 
 .input-section {
-  margin-top: 8px;
+  margin-top: 2px;
 }
 
 .input-title {
-  margin-bottom: 5px;
+  margin-bottom: 2px;
 }
 
 .input-title span {
@@ -222,9 +223,6 @@ input {
   color: #000;
   font-weight: 700;
 }
-.sg-info p {
-  margin: 5px 0 0;
-}
 
 footer {
   margin-top: 10px;
@@ -247,20 +245,21 @@ footer {
   }
 
  .logo {
-  width: 95px;
-  height: 95px;
+  width: 85px;
+  height: 85px;
 }
-  .company {
-    font-size: 18px;
-  }
 
-  .title-ms {
-    font-size: 14px;
-  }
+.company {
+  font-size: 16px;
+}
 
-  .title-cn {
-    font-size: 12px;
-  }
+.title-ms {
+  font-size: 17px;
+}
+
+.title-cn {
+  font-size: 19px;
+}
 
   .input-wrap {
     height: 38px;
