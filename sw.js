@@ -1,4 +1,4 @@
-const CACHE_NAME = "kalkulator-harga-bonsai-v2";
+const CACHE_NAME = "kalkulator-harga-bonsai-v2-2";
 
 const FILES_TO_CACHE = [
   "./",
