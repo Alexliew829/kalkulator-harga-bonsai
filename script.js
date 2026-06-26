@@ -97,6 +97,10 @@ function resetCalculator() {
 
 resetCalculator();
 
-window.addEventListener("pageshow", function () {
-  resetCalculator();
+window.addEventListener("pageshow", function (event) {
+  if (event.persisted) {
+    location.reload();
+  } else {
+    resetCalculator();
+  }
 });
