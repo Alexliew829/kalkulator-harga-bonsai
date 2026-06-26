@@ -13,7 +13,9 @@ function cleanNumber(value) {
 function roundToNearest50(value) {
   return Math.round(value / 50) * 50;
 }
-
+function roundDown100(value) {
+  return Math.floor(value / 100) * 100;
+}
 function formatRM(value) {
   return (
     "RM" +
@@ -28,7 +30,7 @@ function getLivePrice(retail) {
   if (retail < 500) {
     return retail;
   }
-  return roundToNearest50(retail * 0.9);
+return roundDown100(retail * 0.9);
 }
 
 function calculate() {
