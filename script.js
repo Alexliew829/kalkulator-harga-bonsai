@@ -84,10 +84,4 @@ clearBtn.addEventListener("click", function () {
   calculate();
 });
 
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function () {
-    navigator.serviceWorker.register("./sw.js").catch(function () {});
-  });
-}
-
 calculate();
