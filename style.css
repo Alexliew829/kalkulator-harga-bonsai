@@ -154,10 +154,10 @@ input {
 .price-row .ms {
   display: block;
   margin-top: 2px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 900;
   color: #333;
-  line-height: 1.12;
+  line-height: 1.15;
 }
 
 .price-row strong {
@@ -187,10 +187,10 @@ input {
 
 .sg-title {
   text-align: center;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 900;
-  color: #111;
-  line-height: 1.15;
+  color: #B22222;
+  line-height: 1.2;
 }
 
 .sg-live {
