@@ -180,7 +180,16 @@ input {
 .minimum {
   background: #fff7e7;
 }
-
+.minimum strong{
+    color:#B22222;
+    font-size:27px;
+    font-weight:900;
+}
+.minimum .cn,
+.minimum .ms{
+    color:#B22222;
+    font-weight:900;
+}
 .sg-section {
   margin-top: 3px;
 }
