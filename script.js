@@ -1,5 +1,5 @@
 const retailInput = document.getElementById("retailPrice");
-const clearBtn = document.getElementById("clearBtn");
+const clearBtn = document.getElementById("clearBtn"); 
 
 const livePriceEl = document.getElementById("livePrice");
 const sameRackPriceEl = document.getElementById("sameRackPrice");
