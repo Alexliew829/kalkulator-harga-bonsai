@@ -303,7 +303,7 @@ footer {
   }
 
   .price-row .ms {
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .price-row strong {
@@ -314,19 +314,22 @@ footer {
     font-size: 25px;
   }
 
-  .sg-title,
-  .sg-live span {
-    font-size: 15px;
-  }
+ .sg-title {
+  font-size: 18px;
+}
+
+.sg-live span {
+  font-size: 16px;
+}
 
   .sg-live small {
     font-size: 12px;
   }
 
   .sg-info {
-    font-size: 13px;
-    padding: 7px 9px;
-  }
+  font-size: 15px;
+  padding: 6px 10px 9px;
+}
 
   footer {
     font-size: 12px;
