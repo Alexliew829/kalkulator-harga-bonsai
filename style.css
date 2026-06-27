@@ -176,6 +176,19 @@ input {
   color: #b22222;
   font-size: 27px;
 }
+.live-price-box{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+}
+
+.tiktok-price{
+  color:#B22222;
+  font-size:15px;
+  font-weight:900;
+  line-height:1.1;
+  margin-top:2px;
+}
 .highlight .cn,
 .highlight .ms{
     color:#B22222 !important;
@@ -297,7 +310,9 @@ footer {
   .highlight strong {
     font-size: 25px;
   }
-
+.tiktok-price{
+  font-size:13px;
+}
  .sg-title {
   font-size: 18px;
 }
