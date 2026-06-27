@@ -94,7 +94,13 @@ body {
   font-weight: 900;
   color: #1e5631;
 }
-
+.tiktok-price{
+  color:#B22222;
+  font-size:15px;
+  font-weight:900;
+  white-space:nowrap;
+  margin-right:8px;
+}
 input {
   flex: 1;
   height: 100%;
@@ -175,11 +181,6 @@ input {
 .highlight strong {
   color: #b22222;
   font-size: 27px;
-}
-.live-price-box{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
 }
 
 .tiktok-price{
