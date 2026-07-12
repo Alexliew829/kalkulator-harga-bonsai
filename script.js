@@ -41,7 +41,7 @@ function calculate() {
   const tiktokPrice = retail * 0.82;
   const livePrice = getLivePrice(retail);
 
-  const sameRackDiscount = livePrice >= 500 ? "+RM50.00" : "-";
+  const sameRackDiscount = livePrice >= 500 ? "-RM30.00" : "-";
 
   let pickupDiscount;
 
