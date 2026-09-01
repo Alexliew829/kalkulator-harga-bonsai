@@ -67,6 +67,20 @@ body {
   line-height: 1.05;
 }
 
+.company-line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.company-line .version {
+  color: #777;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  margin: 0;
+}
+
 .input-section {
   margin-top: 2px;
 }
@@ -130,6 +144,47 @@ input {
   border: 1px solid #d8dfd4;
   border-radius: 10px;
   overflow: hidden;
+}
+
+.currency-row {
+  padding: 6px 8px 5px;
+  border-bottom: 1px solid #e7ece4;
+  background: #fff;
+}
+
+.currency-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#currencySelect {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #d8dfd4;
+  border-radius: 8px;
+  background: #fff;
+  padding: 7px 9px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #1e5631;
+  outline: none;
+}
+
+#foreignPrice {
+  font-size: 24px;
+  font-weight: 900;
+  color: #1e5631;
+  white-space: nowrap;
+}
+
+.rate-line {
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #666;
+  line-height: 1.2;
 }
 
 .price-row {
@@ -229,21 +284,6 @@ color: #0B5ED7;
    color:#0B5ED7;
 }
 
-footer {
-  margin-top: 7px;
-  text-align: center;
-  color: #b22222;
-  font-size: 13px;
-  font-weight: 900;
-  line-height: 1.35;
-}
-
-.version {
-  color: #555;
-  font-size: 12px;
-  font-weight: 700;
-  margin-top: 3px;
-}
 
 @media (max-width: 430px) {
   .app {
@@ -306,6 +346,18 @@ footer {
 .tiktok-price{
   font-size:21px;
 }
+  #currencySelect {
+    font-size: 15px;
+  }
+
+  #foreignPrice {
+    font-size: 22px;
+  }
+
+  .rate-line {
+    font-size: 11px;
+  }
+
  .sg-title {
   font-size: 18px;
 }
@@ -314,8 +366,4 @@ footer {
   font-size: 15px;
   padding: 6px 10px 9px;
 }
-
-  footer {
-    font-size: 12px;
-  }
 }
