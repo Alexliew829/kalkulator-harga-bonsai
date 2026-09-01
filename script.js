@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V3.0
+// Lover Legend Bonsai Price Calculator V3.1
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -253,9 +253,56 @@ function resetCalculator() {
   calculate();
 }
 
-restoreCurrencySelection();
-resetCalculator();
-loadExchangeRates();
+async function clearLegacyPwaCache() {
+  let hadController = false;
+
+  try {
+    if ("serviceWorker" in navigator) {
+      hadController = Boolean(navigator.serviceWorker.controller);
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(registrations.map(function (registration) {
+        return registration.unregister();
+      }));
+    }
+
+    if ("caches" in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map(function (key) {
+        return caches.delete(key);
+      }));
+    }
+  } catch (error) {
+    // Cleanup failure must never stop the calculator from loading.
+  }
+
+  // If this page was opened under an older service worker, reload once after
+  // unregistering it so the Home Screen app is immediately released from it.
+  if (hadController) {
+    try {
+      const reloadKey = "loverLegendPwaCleanupV31";
+      if (!sessionStorage.getItem(reloadKey)) {
+        sessionStorage.setItem(reloadKey, "1");
+        location.reload();
+        return true;
+      }
+    } catch (error) {
+      // Ignore sessionStorage errors.
+    }
+  }
+
+  return false;
+}
+
+async function startCalculator() {
+  const reloading = await clearLegacyPwaCache();
+  if (reloading) return;
+
+  restoreCurrencySelection();
+  resetCalculator();
+  loadExchangeRates();
+}
+
+startCalculator();
 
 window.addEventListener("pageshow", function (event) {
   if (event.persisted) {
