@@ -154,7 +154,7 @@ input {
 
 .currency-main {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
   align-items: center;
   gap: 10px;
   min-height: 52px;
@@ -175,6 +175,7 @@ input {
 }
 
 #foreignPrice {
+  width: 100%;
   min-width: 0;
   font-size: 31px;
   line-height: 1;
@@ -361,7 +362,7 @@ color: #0B5ED7;
   }
 
   .currency-main {
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
     gap: 8px;
     min-height: 50px;
   }

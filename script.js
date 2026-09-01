@@ -1,3 +1,4 @@
+// Lover Legend Bonsai Price Calculator V2.8
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
