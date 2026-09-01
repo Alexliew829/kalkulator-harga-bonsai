@@ -153,6 +153,7 @@ input {
 }
 
 .currency-main {
+  /* V2.9: fixed left/right layout; currency text length must not resize columns. */
   display: grid;
   grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
   align-items: center;

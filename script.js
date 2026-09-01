@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V2.8
+// Lover Legend Bonsai Price Calculator V2.9
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -21,6 +21,27 @@ let exchangeRates = {
   USD: 0.237
 };
 let rateLoadedFromWeb = false;
+
+const CURRENCY_STORAGE_KEY = "loverLegendBonsaiCurrency";
+
+function restoreCurrencySelection() {
+  try {
+    const savedCurrency = localStorage.getItem(CURRENCY_STORAGE_KEY);
+    if (["IDR", "TWD", "USD"].includes(savedCurrency)) {
+      currencySelect.value = savedCurrency;
+    }
+  } catch (error) {
+    // If localStorage is unavailable, keep the default IDR selection.
+  }
+}
+
+function saveCurrencySelection() {
+  try {
+    localStorage.setItem(CURRENCY_STORAGE_KEY, currencySelect.value);
+  } catch (error) {
+    // Ignore storage errors; calculator still works normally.
+  }
+}
 
 function cleanNumber(value) {
   return Number(String(value).replace(/[^0-9.]/g, "")) || 0;
@@ -216,7 +237,10 @@ retailInput.addEventListener("keydown", function (event) {
   }
 });
 
-currencySelect.addEventListener("change", calculate);
+currencySelect.addEventListener("change", function () {
+  saveCurrencySelection();
+  calculate();
+});
 
 clearBtn.addEventListener("click", function () {
   retailInput.value = "0.00";
@@ -229,6 +253,7 @@ function resetCalculator() {
   calculate();
 }
 
+restoreCurrencySelection();
 resetCalculator();
 loadExchangeRates();
 
@@ -236,6 +261,7 @@ window.addEventListener("pageshow", function (event) {
   if (event.persisted) {
     location.reload();
   } else {
+    restoreCurrencySelection();
     resetCalculator();
     loadExchangeRates();
   }
