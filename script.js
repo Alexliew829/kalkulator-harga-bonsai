@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V3.1
+// Lover Legend Bonsai Price Calculator V3.2
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -10,6 +10,7 @@ const tiktokPriceEl = document.getElementById("tiktokPrice");
 const currencySelect = document.getElementById("currencySelect");
 const foreignPriceEl = document.getElementById("foreignPrice");
 const rateLineEl = document.getElementById("rateLine");
+const pullRefreshEl = document.getElementById("pullRefresh");
 
 const EXPORT_CERT_RM = 200;
 const PAYMENT_BUFFER = 0.03;
@@ -293,6 +294,86 @@ async function clearLegacyPwaCache() {
   return false;
 }
 
+function enablePullToRefresh() {
+  if (!pullRefreshEl) return;
+
+  let startY = 0;
+  let pullDistance = 0;
+  let tracking = false;
+  const triggerDistance = 75;
+
+  function pageIsAtTop() {
+    return window.scrollY <= 0 && document.documentElement.scrollTop <= 0;
+  }
+
+  document.addEventListener("touchstart", function (event) {
+    if (!pageIsAtTop() || event.touches.length !== 1) {
+      tracking = false;
+      return;
+    }
+
+    startY = event.touches[0].clientY;
+    pullDistance = 0;
+    tracking = true;
+    pullRefreshEl.classList.remove("ready");
+  }, { passive: true });
+
+  document.addEventListener("touchmove", function (event) {
+    if (!tracking || event.touches.length !== 1) return;
+
+    const currentY = event.touches[0].clientY;
+    const delta = currentY - startY;
+
+    if (delta <= 0 || !pageIsAtTop()) {
+      pullDistance = 0;
+      pullRefreshEl.classList.remove("show", "ready");
+      return;
+    }
+
+    pullDistance = Math.min(delta * 0.55, 95);
+    pullRefreshEl.style.transform = "translate(-50%, " + Math.max(0, pullDistance - 42) + "px)";
+    pullRefreshEl.classList.add("show");
+
+    if (pullDistance >= triggerDistance) {
+      pullRefreshEl.textContent = "↑ 放开刷新 / Lepas untuk Refresh";
+      pullRefreshEl.classList.add("ready");
+    } else {
+      pullRefreshEl.textContent = "↓ 下拉刷新 / Tarik untuk Refresh";
+      pullRefreshEl.classList.remove("ready");
+    }
+
+    // Home Screen mode on iPhone does not provide reliable native pull-to-refresh.
+    // Prevent the rubber-band only while our refresh gesture is active.
+    if (event.cancelable) event.preventDefault();
+  }, { passive: false });
+
+  document.addEventListener("touchend", function () {
+    if (!tracking) return;
+    tracking = false;
+
+    if (pullDistance >= triggerDistance) {
+      pullRefreshEl.textContent = "刷新中... / Refreshing...";
+      pullRefreshEl.classList.add("show", "refreshing");
+      saveCurrencySelection();
+      setTimeout(function () {
+        location.reload();
+      }, 120);
+      return;
+    }
+
+    pullDistance = 0;
+    pullRefreshEl.classList.remove("show", "ready");
+    pullRefreshEl.style.transform = "translate(-50%, -48px)";
+  }, { passive: true });
+
+  document.addEventListener("touchcancel", function () {
+    tracking = false;
+    pullDistance = 0;
+    pullRefreshEl.classList.remove("show", "ready");
+    pullRefreshEl.style.transform = "translate(-50%, -48px)";
+  }, { passive: true });
+}
+
 async function startCalculator() {
   const reloading = await clearLegacyPwaCache();
   if (reloading) return;
@@ -302,6 +383,7 @@ async function startCalculator() {
   loadExchangeRates();
 }
 
+enablePullToRefresh();
 startCalculator();
 
 window.addEventListener("pageshow", function (event) {
