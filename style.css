@@ -147,44 +147,54 @@ input {
 }
 
 .currency-row {
-  padding: 6px 8px 5px;
+  padding: 8px 8px 7px;
   border-bottom: 1px solid #e7ece4;
   background: #fff;
 }
 
 .currency-main {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
+  min-height: 52px;
 }
 
 #currencySelect {
-  flex: 1;
+  width: 100%;
   min-width: 0;
+  height: 46px;
   border: 1px solid #d8dfd4;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #fff;
-  padding: 7px 9px;
-  font-size: 16px;
+  padding: 7px 10px;
+  font-size: 17px;
   font-weight: 900;
   color: #1e5631;
   outline: none;
 }
 
 #foreignPrice {
-  font-size: 24px;
+  min-width: 0;
+  font-size: 31px;
+  line-height: 1;
   font-weight: 900;
   color: #1e5631;
   white-space: nowrap;
+  text-align: right;
 }
 
 .rate-line {
-  margin-top: 4px;
-  font-size: 12px;
+  display: block;
+  width: 100%;
+  min-height: 17px;
+  margin-top: 6px;
+  font-size: 13px;
   font-weight: 800;
   color: #666;
   line-height: 1.2;
+  text-align: left;
+  white-space: nowrap;
 }
 
 .price-row {
@@ -346,16 +356,29 @@ color: #0B5ED7;
 .tiktok-price{
   font-size:21px;
 }
+  .currency-row {
+    padding: 8px 7px 7px;
+  }
+
+  .currency-main {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    min-height: 50px;
+  }
+
   #currencySelect {
-    font-size: 15px;
+    height: 44px;
+    font-size: 16px;
   }
 
   #foreignPrice {
-    font-size: 22px;
+    font-size: 29px;
   }
 
   .rate-line {
-    font-size: 11px;
+    min-height: 16px;
+    margin-top: 6px;
+    font-size: 12px;
   }
 
  .sg-title {
