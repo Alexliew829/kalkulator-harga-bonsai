@@ -304,7 +304,7 @@ color: #0B5ED7;
 
 
 
-/* V3.2: reliable in-app pull-to-refresh for iPhone Home Screen mode. */
+/* V3.3: reliable in-app pull-to-refresh; refresh returns currency to default IDR. */
 .pull-refresh {
   position: fixed;
   top: 0;

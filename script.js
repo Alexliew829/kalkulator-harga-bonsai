@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V3.2
+// Lover Legend Bonsai Price Calculator V3.3
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -23,25 +23,8 @@ let exchangeRates = {
 };
 let rateLoadedFromWeb = false;
 
-const CURRENCY_STORAGE_KEY = "loverLegendBonsaiCurrency";
-
-function restoreCurrencySelection() {
-  try {
-    const savedCurrency = localStorage.getItem(CURRENCY_STORAGE_KEY);
-    if (["IDR", "TWD", "USD"].includes(savedCurrency)) {
-      currencySelect.value = savedCurrency;
-    }
-  } catch (error) {
-    // If localStorage is unavailable, keep the default IDR selection.
-  }
-}
-
-function saveCurrencySelection() {
-  try {
-    localStorage.setItem(CURRENCY_STORAGE_KEY, currencySelect.value);
-  } catch (error) {
-    // Ignore storage errors; calculator still works normally.
-  }
+function resetCurrencyToDefault() {
+  currencySelect.value = "IDR";
 }
 
 function cleanNumber(value) {
@@ -239,7 +222,6 @@ retailInput.addEventListener("keydown", function (event) {
 });
 
 currencySelect.addEventListener("change", function () {
-  saveCurrencySelection();
   calculate();
 });
 
@@ -354,7 +336,6 @@ function enablePullToRefresh() {
     if (pullDistance >= triggerDistance) {
       pullRefreshEl.textContent = "刷新中... / Refreshing...";
       pullRefreshEl.classList.add("show", "refreshing");
-      saveCurrencySelection();
       setTimeout(function () {
         location.reload();
       }, 120);
@@ -378,7 +359,7 @@ async function startCalculator() {
   const reloading = await clearLegacyPwaCache();
   if (reloading) return;
 
-  restoreCurrencySelection();
+  resetCurrencyToDefault();
   resetCalculator();
   loadExchangeRates();
 }
@@ -390,7 +371,7 @@ window.addEventListener("pageshow", function (event) {
   if (event.persisted) {
     location.reload();
   } else {
-    restoreCurrencySelection();
+    resetCurrencyToDefault();
     resetCalculator();
     loadExchangeRates();
   }
