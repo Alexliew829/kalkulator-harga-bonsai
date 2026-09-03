@@ -516,7 +516,7 @@ color: #0B5ED7;
   }
 }
 
-/* V4.3: MYR default + Indonesia shipping mode + IDR total shipping emphasis */
+/* V4.4: MYR default + Indonesia shipping mode + IDR total shipping emphasis */
 .seal-logo {
   width: 48px;
   height: 48px;
@@ -664,7 +664,7 @@ color: #0B5ED7;
   .indo-grid.four { grid-template-columns: 1fr 1fr; }
 }
 
-/* V4.3: balanced Indonesia shipping fields */
+/* V4.4: balanced Indonesia shipping fields */
 .indo-grid.port-grid { grid-template-columns: minmax(0, 1.75fr) minmax(128px, .72fr); align-items:end; }
 .indo-grid.destination-grid { grid-template-columns: minmax(0, 2.65fr) minmax(92px, .72fr); align-items:end; }
 .indo-grid.port-grid label, .indo-grid.destination-grid label { display:flex; flex-direction:column; min-width:0; }
@@ -681,7 +681,7 @@ color: #0B5ED7;
   .indo-grid.port-grid label > span, .indo-grid.destination-grid label > span { min-height:42px; }
 }
 
-/* V4.3 final: Jakarta-only sea route */
+/* V4.4 final: Jakarta-only sea route */
 .fixed-port {
   width:100%; min-height:42px; display:flex; align-items:center; box-sizing:border-box;
   padding:9px 11px; border:1px solid #cfd8cf; border-radius:10px; background:#f7faf7;
@@ -697,7 +697,7 @@ color: #0B5ED7;
 }
 
 
-/* V4.3: Postcode first, auto-detect customer region */
+/* V4.4: Postcode first, auto-detect customer region */
 .indo-grid.destination-grid.postcode-first { grid-template-columns:minmax(104px,.82fr) minmax(0,2.45fr); align-items:start; }
 .indo-grid.destination-grid.postcode-first label > span { min-height:34px; display:flex; align-items:flex-end; }
 .postcode-field, .province-field { min-width:0; }
@@ -712,7 +712,7 @@ color: #0B5ED7;
 }
 
 
-/* V4.3 readability + compact sea freight input */
+/* V4.4 readability + compact sea freight input */
 .sea-rm-input {
   width:100%; min-width:0; height:42px; box-sizing:border-box;
   border:1px solid #cfd8cf; border-radius:10px; background:#fff;
@@ -735,4 +735,52 @@ color: #0B5ED7;
   .indo-note { font-size:12.5px; }
   .postcode-status { font-size:10.5px; }
 }
-\n\n/* V4.3: align paired labels and controls on desktop/mobile */\n.indo-grid.port-grid,\n.indo-grid.destination-grid.postcode-first { align-items:start; }\n.indo-grid.port-grid label > span,\n.indo-grid.destination-grid.postcode-first label > span {\n  min-height:48px;\n  height:48px;\n  box-sizing:border-box;\n  display:flex;\n  align-items:flex-end;\n  line-height:1.18;\n}\n.fixed-port, .sea-rm-input, #indoPostcode, #indoProvince {\n  height:44px;\n  min-height:44px;\n  box-sizing:border-box;\n}\n#indoProvince { padding-top:7px; padding-bottom:7px; }\n@media (max-width:390px){\n  .indo-grid.port-grid label > span,\n  .indo-grid.destination-grid.postcode-first label > span {\n    min-height:52px; height:52px; line-height:1.15;\n  }\n}\n
+\n\n/* V4.4: align paired labels and controls on desktop/mobile */\n.indo-grid.port-grid,\n.indo-grid.destination-grid.postcode-first { align-items:start; }\n.indo-grid.port-grid label > span,\n.indo-grid.destination-grid.postcode-first label > span {\n  min-height:48px;\n  height:48px;\n  box-sizing:border-box;\n  display:flex;\n  align-items:flex-end;\n  line-height:1.18;\n}\n.fixed-port, .sea-rm-input, #indoPostcode, #indoProvince {\n  height:44px;\n  min-height:44px;\n  box-sizing:border-box;\n}\n#indoProvince { padding-top:7px; padding-bottom:7px; }\n@media (max-width:390px){\n  .indo-grid.port-grid label > span,\n  .indo-grid.destination-grid.postcode-first label > span {\n    min-height:52px; height:52px; line-height:1.15;\n  }\n}\n
+/* V4.4 mobile compact alignment: reduce blank space without shrinking readable text */
+.indo-section { padding-top:10px; padding-bottom:10px; }
+.indo-title { margin-bottom:2px; }
+.indo-sub { margin-bottom:7px; }
+.indo-grid { gap:8px; margin-bottom:7px; }
+.indo-size-title { margin:1px 0 4px; }
+.indo-grid.port-grid label > span,
+.indo-grid.destination-grid.postcode-first label > span {
+  min-height:34px !important;
+  height:34px !important;
+  align-items:flex-end;
+  line-height:1.12;
+}
+.fixed-port, .sea-rm-input, #indoPostcode, #indoProvince {
+  height:42px !important;
+  min-height:42px !important;
+}
+.indo-result { margin-top:6px; padding-top:9px; padding-bottom:9px; }
+.indo-total { margin-top:3px; margin-bottom:5px; }
+.indo-breakdown { margin-top:5px; }
+.indo-note { margin-top:5px; }
+@media (max-width:480px) {
+  .indo-section { margin-top:4px; padding:8px 10px 9px; }
+  .indo-title { margin-top:0; margin-bottom:1px; }
+  .indo-sub { margin:0 0 5px; line-height:1.22; }
+  .indo-grid { gap:7px; margin-bottom:5px; }
+  .indo-grid.port-grid label > span,
+  .indo-grid.destination-grid.postcode-first label > span {
+    min-height:32px !important;
+    height:32px !important;
+    font-size:12.5px;
+    line-height:1.08;
+  }
+  .fixed-port, .sea-rm-input, #indoPostcode, #indoProvince {
+    height:40px !important;
+    min-height:40px !important;
+  }
+  .indo-size-title { margin:0 0 3px; }
+  .indo-grid.four { gap:6px; margin-bottom:5px; }
+  .indo-grid.four label > span { min-height:18px; margin-bottom:2px; }
+  .indo-grid.four input { height:39px; min-height:39px; padding-top:6px; padding-bottom:6px; }
+  .indo-result { margin-top:4px; padding:7px 8px; }
+  .indo-result-head { margin-bottom:1px; }
+  .indo-total { margin:1px 0 3px; }
+  .indo-breakdown { margin-top:3px; }
+  .indo-breakdown > div { padding-top:4px; padding-bottom:4px; }
+  .indo-note { margin-top:3px; line-height:1.28; }
+}
