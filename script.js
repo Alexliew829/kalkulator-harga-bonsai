@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V3.6
+// Lover Legend Bonsai Price Calculator V3.7
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,24 +201,25 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate. This is intentionally conservative for pre-sale quoting,
-// not a live J&T/freight-company tariff. Chargeable weight uses L*W*H/6000.
+// Indonesia inland estimate V3.7.
+// Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
+// origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
+// Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
+// NOT official J&T Cargo tariffs. Final freight must still be confirmed by the logistics company.
 const INDO_ZONE = {
-  JAKARTA:[95000,4500,1.10], BANTEN:[120000,5500,1.12], WEST_JAVA:[150000,6500,1.15],
-  CENTRAL_JAVA:[240000,8500,1.18], YOGYAKARTA:[250000,9000,1.18], EAST_JAVA:[300000,10500,1.20],
-  BALI:[370000,13500,1.22], ACEH:[500000,18000,1.28], NORTH_SUMATRA:[360000,14000,1.24],
-  WEST_SUMATRA:[390000,15000,1.25], RIAU:[400000,15000,1.25], RIAU_ISLANDS:[470000,17500,1.28],
-  JAMBI:[390000,15000,1.25], SOUTH_SUMATRA:[350000,13500,1.23], BANGKA:[450000,17000,1.27],
-  BENGKULU:[410000,15500,1.25], LAMPUNG:[310000,12000,1.22], WEST_KALIMANTAN:[500000,18500,1.28],
-  CENTRAL_KALIMANTAN:[540000,19500,1.30], SOUTH_KALIMANTAN:[510000,18500,1.28], EAST_KALIMANTAN:[540000,19500,1.30],
-  NORTH_KALIMANTAN:[620000,22000,1.33], NORTH_SULAWESI:[620000,22000,1.33], GORONTALO:[650000,23000,1.34],
-  CENTRAL_SULAWESI:[640000,23000,1.34], WEST_SULAWESI:[650000,23500,1.35], SOUTH_SULAWESI:[560000,20000,1.30],
-  SOUTHEAST_SULAWESI:[650000,23500,1.35], WEST_NUSA:[520000,19000,1.29], EAST_NUSA:[650000,24000,1.35],
-  MALUKU:[780000,28000,1.40], NORTH_MALUKU:[820000,29000,1.42], PAPUA:[980000,34000,1.48],
-  WEST_PAPUA:[930000,33000,1.46], CENTRAL_PAPUA:[1050000,36000,1.50], REMOTE:[1100000,38000,1.55]
+  JAKARTA:[3500,50], BANTEN:[4500,50], WEST_JAVA:[5000,50], CENTRAL_JAVA:[6000,50],
+  YOGYAKARTA:[6000,50], EAST_JAVA:[6500,50], BALI:[8000,50], ACEH:[10500,100],
+  NORTH_SUMATRA:[8500,100], WEST_SUMATRA:[9000,100], RIAU:[9000,100], RIAU_ISLANDS:[11500,100],
+  JAMBI:[9000,100], SOUTH_SUMATRA:[8000,100], BANGKA:[10500,100], BENGKULU:[9500,100],
+  LAMPUNG:[7000,50], WEST_KALIMANTAN:[12000,100], CENTRAL_KALIMANTAN:[13000,100],
+  SOUTH_KALIMANTAN:[12000,100], EAST_KALIMANTAN:[13500,100], NORTH_KALIMANTAN:[16000,100],
+  NORTH_SULAWESI:[15500,100], GORONTALO:[16500,100], CENTRAL_SULAWESI:[16000,100],
+  WEST_SULAWESI:[16500,100], SOUTH_SULAWESI:[12000,100], SOUTHEAST_SULAWESI:[16500,100],
+  WEST_NUSA:[11500,100], EAST_NUSA:[16500,100], MALUKU:[21000,100], NORTH_MALUKU:[22000,100],
+  PAPUA:[28000,100], WEST_PAPUA:[26000,100], CENTRAL_PAPUA:[30000,100], REMOTE:[32000,100]
 };
 
-const PORT_FACTOR = { JAKARTA:1, SURABAYA:0.97, SEMARANG:0.98, MEDAN:1.02, MAKASSAR:1.03 };
+const PORT_FACTOR = { JAKARTA:1, SURABAYA:0.98, SEMARANG:0.98, MEDAN:0.98, MAKASSAR:1.00 };
 
 function calculateIndonesiaShipping() {
   const sec = indonesiaShippingEl;
@@ -234,18 +235,19 @@ function calculateIndonesiaShipping() {
   const postcode = get("indoPostcode").value.replace(/\D/g, "").slice(0,5);
   if (get("indoPostcode").value !== postcode) get("indoPostcode").value = postcode;
 
-  const volKg = (l * w * h) / 6000;
+  const volKg = (l * w * h) / 5000;
   const chargeKg = Math.max(kg, volKg);
   const z = INDO_ZONE[province] || INDO_ZONE.REMOTE;
+  const billKg = Math.max(chargeKg, z[1]);
   const portFactor = PORT_FACTOR[port] || 1;
-  let inlandIdr = (z[0] + z[1] * chargeKg) * z[2] * portFactor;
+  let inlandIdr = z[0] * billKg * portFactor;
 
-  // Large/tall parcels and remote postcodes get extra pre-sale safety margin.
+  // Conservative buffer for pre-sale quotes and unusually bulky/tall cargo.
+  inlandIdr *= 1.15;
   const maxSide = Math.max(l,w,h);
   if (maxSide > 120) inlandIdr *= 1.10;
   if (maxSide > 180) inlandIdr *= 1.12;
-  if (chargeKg > 100) inlandIdr *= 1.08;
-  if (postcode && province !== "JAKARTA") inlandIdr *= 1.05;
+  if (postcode && province !== "JAKARTA") inlandIdr *= 1.03;
   inlandIdr = roundUp(inlandIdr, 50000);
 
   const idrRate = exchangeRates.IDR > 0 ? exchangeRates.IDR : 4389.41;
@@ -255,17 +257,14 @@ function calculateIndonesiaShipping() {
 
   get("indoSeaOut").textContent = formatRM(sea);
   get("indoInlandOut").textContent = formatRM(inlandRm);
-  get("indoVolOut").textContent = volKg.toLocaleString("en-MY", {maximumFractionDigits:1}) + " kg";
-  get("indoChargeOut").textContent = chargeKg.toLocaleString("en-MY", {maximumFractionDigits:1}) + " kg";
+  get("indoVolOut").textContent = volKg.toLocaleString("en-MY", {minimumFractionDigits:1, maximumFractionDigits:1}) + " kg";
+  get("indoChargeOut").textContent = chargeKg.toLocaleString("en-MY", {minimumFractionDigits:1, maximumFractionDigits:1}) + " kg";
   get("indoTotalIdr").textContent = formatIDR(totalIdr);
   get("indoTotalRm").textContent = "约 " + formatRM(totalRm) + " / Anggaran " + formatRM(totalRm);
 
   const note = get("indoNote");
-  if (postcode.length === 5) {
-    note.innerHTML = "Postcode <strong>" + postcode + "</strong> 已加入安全估算。参考价不是物流公司正式报价。<br>Poskod <strong>" + postcode + "</strong> digunakan untuk anggaran lebih selamat. Ini bukan sebut harga rasmi logistik.";
-  } else {
-    note.innerHTML = "参考估算，不是物流公司正式报价。系统采用偏保守价格，避免售前报价过低。<br>Anggaran rujukan sahaja, bukan sebut harga rasmi logistik. Harga dibuat lebih konservatif untuk mengurangkan risiko terlebih murah.";
-  }
+  const pc = postcode.length === 5 ? " Postcode <strong>" + postcode + "</strong> 已记录。" : "";
+  note.innerHTML = "J&T Cargo 市场参考估算，不是 J&T 官方实时报价。" + pc + " 实际收费以物流公司确认为准。<br>Anggaran rujukan pasaran J&T Cargo, bukan kadar rasmi masa nyata. Caj sebenar tertakluk kepada pengesahan syarikat logistik.";
 }
 
 retailInput.addEventListener("focus", function () { retailInput.select(); });

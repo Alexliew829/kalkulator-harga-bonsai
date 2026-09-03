@@ -516,7 +516,7 @@ color: #0B5ED7;
   }
 }
 
-/* V3.6: MYR default + Indonesia shipping mode + IDR total shipping emphasis */
+/* V3.7: MYR default + Indonesia shipping mode + IDR total shipping emphasis */
 .seal-logo {
   width: 48px;
   height: 48px;
@@ -663,3 +663,9 @@ color: #0B5ED7;
   .indo-grid.two { grid-template-columns: 1fr; }
   .indo-grid.four { grid-template-columns: 1fr 1fr; }
 }
+
+/* V3.7: wider destination selector, compact 5-digit postcode */
+.indo-grid.destination-grid { grid-template-columns: minmax(0, 2.35fr) minmax(100px, 1fr); }
+.indo-grid.destination-grid label > span { min-height: 29px; }
+#indoPostcode { text-align:center; letter-spacing:1px; }
+@media (max-width:390px){ .indo-grid.destination-grid { grid-template-columns: minmax(0, 2.2fr) minmax(92px, .9fr); } }

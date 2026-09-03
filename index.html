@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0" />
 
   <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css?v=3.6" />
+  <link rel="stylesheet" href="style.css?v=3.7" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
@@ -30,7 +30,7 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V3.6</div>
+          <div class="version">V3.7</div>
         </div>
       </div>
 
@@ -113,7 +113,7 @@
 
     <section id="indonesiaShipping" class="indo-section" hidden>
       <div class="indo-title">🇮🇩 印尼运费计算 / Kiraan Penghantaran Indonesia</div>
-      <div class="indo-sub">售前保守估算 / Anggaran konservatif untuk pelanggan</div>
+      <div class="indo-sub">J&T Cargo 市场参考 · 售前保守估算 / Rujukan pasaran J&T Cargo · anggaran konservatif</div>
 
       <div class="indo-grid two">
         <label>
@@ -140,7 +140,7 @@
         <label><span>重量 / kg</span><input id="indoKg" type="number" min="0.1" step="0.1" value="35" inputmode="decimal"></label>
       </div>
 
-      <div class="indo-grid two">
+      <div class="indo-grid destination-grid">
         <label>
           <span>客户地区 / Kawasan pelanggan</span>
           <select id="indoProvince">
@@ -184,7 +184,7 @@
         </label>
         <label>
           <span>Postcode / Poskod（可选 / pilihan）</span>
-          <input id="indoPostcode" type="text" inputmode="numeric" maxlength="5" placeholder="Contoh: 40115">
+          <input id="indoPostcode" type="text" inputmode="numeric" maxlength="5" placeholder="5位" pattern="[0-9]{5}">
         </label>
       </div>
 
@@ -197,7 +197,7 @@
         <div class="indo-breakdown">
           <div><span>海运 / Laut</span><strong id="indoSeaOut">RM500.00</strong></div>
           <div><span>印尼内陆 / Darat</span><strong id="indoInlandOut">RM0.00</strong></div>
-          <div><span>体积重量 / Berat volum</span><strong id="indoVolOut">0 kg</strong></div>
+          <div><span>Cargo体积重 / Berat volum</span><strong id="indoVolOut">0 kg</strong></div>
           <div><span>计费重量 / Berat caj</span><strong id="indoChargeOut">0 kg</strong></div>
         </div>
         <div id="indoNote" class="indo-note">参考估算，不是物流公司正式报价。系统采用偏保守价格，避免售前报价过低。<br>Anggaran rujukan sahaja, bukan sebut harga rasmi logistik. Harga dibuat lebih konservatif untuk mengurangkan risiko terlebih murah.</div>
@@ -228,6 +228,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=3.6"></script>
+  <script src="script.js?v=3.7"></script>
 </body>
 </html>
