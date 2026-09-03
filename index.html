@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0" />
 
   <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css?v=3.4" />
+  <link rel="stylesheet" href="style.css?v=3.6" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
@@ -30,9 +30,11 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V3.4</div>
+          <div class="version">V3.6</div>
         </div>
       </div>
+
+      <img src="images/red-seal.jpg" class="seal-logo" alt="Lover Legend red seal logo" onerror="this.style.display='none'" />
     </header>
 
     <section class="input-section">
@@ -58,7 +60,8 @@
       <div class="currency-row">
         <div class="currency-main">
           <select id="currencySelect" aria-label="Currency">
-            <option value="IDR" selected>印尼盾 IDR</option>
+            <option value="MYR" selected>马币 MYR</option>
+            <option value="IDR">印尼盾 IDR</option>
             <option value="TWD">台币 TWD</option>
             <option value="USD">美金 USD</option>
           </select>
@@ -67,7 +70,7 @@
         <div class="rate-line" id="rateLine">Rate: 读取中...</div>
       </div>
 
-      <div class="price-row">
+      <div class="price-row domestic-only">
         <div class="label">
           <span class="cn">西马同木架（2棵），每一棵折扣</span>
           <span class="ms">2 Pokok (Rangka Sama), Setiap Pokok Discount</span>
@@ -75,7 +78,7 @@
         <strong id="sameRackPrice">-</strong>
       </div>
 
-      <div class="price-row">
+      <div class="price-row domestic-only">
         <div class="label">
           <span class="cn">东马运费（每一棵+）</span>
           <span class="ms">Penghantaran Sabah, Sarawak & Labuan (1 Pokok+)</span>
@@ -83,7 +86,7 @@
         <strong>+RM300.00</strong>
       </div>
 
-      <div class="price-row">
+      <div class="price-row domestic-only">
         <div class="label">
           <span class="cn">东马同木架（2棵），运费共</span>
           <span class="ms">2 Pokok (Rangka Sama), Jumlah Kos Penghantaran Sabah, Sarawak & Labuan</span>
@@ -91,7 +94,7 @@
         <strong>RM400.00</strong>
       </div>
 
-      <div class="price-row">
+      <div class="price-row domestic-only">
         <div class="label">
           <span class="cn">花圃自取</span>
           <span class="ms">Ambil Sendiri di Nursery</span>
@@ -99,12 +102,105 @@
         <strong id="pickupPrice">RM0.00</strong>
       </div>
 
-      <div class="price-row minimum">
+      <div class="price-row minimum domestic-only">
         <div class="label">
           <span class="cn">最低售价</span>
           <span class="ms">Harga Minimum</span>
         </div>
         <strong id="minimumPrice">RM0.00</strong>
+      </div>
+    </section>
+
+    <section id="indonesiaShipping" class="indo-section" hidden>
+      <div class="indo-title">🇮🇩 印尼运费计算 / Kiraan Penghantaran Indonesia</div>
+      <div class="indo-sub">售前保守估算 / Anggaran konservatif untuk pelanggan</div>
+
+      <div class="indo-grid two">
+        <label>
+          <span>印尼港口 / Pelabuhan</span>
+          <select id="indoPort">
+            <option value="JAKARTA" selected>Jakarta - Tanjung Priok</option>
+            <option value="SURABAYA">Surabaya - Tanjung Perak</option>
+            <option value="SEMARANG">Semarang - Tanjung Emas</option>
+            <option value="MEDAN">Medan - Belawan</option>
+            <option value="MAKASSAR">Makassar</option>
+          </select>
+        </label>
+        <label>
+          <span>大马到港海运 / Kos laut (RM)</span>
+          <input id="indoSeaRm" type="number" min="0" step="1" value="500" inputmode="decimal">
+        </label>
+      </div>
+
+      <div class="indo-size-title">包装尺寸 / Saiz bungkusan (cm)</div>
+      <div class="indo-grid four">
+        <label><span>长 / P</span><input id="indoL" type="number" min="1" step="1" value="90" inputmode="decimal"></label>
+        <label><span>宽 / L</span><input id="indoW" type="number" min="1" step="1" value="50" inputmode="decimal"></label>
+        <label><span>高 / T</span><input id="indoH" type="number" min="1" step="1" value="90" inputmode="decimal"></label>
+        <label><span>重量 / kg</span><input id="indoKg" type="number" min="0.1" step="0.1" value="35" inputmode="decimal"></label>
+      </div>
+
+      <div class="indo-grid two">
+        <label>
+          <span>客户地区 / Kawasan pelanggan</span>
+          <select id="indoProvince">
+            <option value="JAKARTA" selected>DKI Jakarta / Jabodetabek</option>
+            <option value="BANTEN">Banten</option>
+            <option value="WEST_JAVA">Jawa Barat / West Java</option>
+            <option value="CENTRAL_JAVA">Jawa Tengah / Central Java</option>
+            <option value="YOGYAKARTA">DI Yogyakarta</option>
+            <option value="EAST_JAVA">Jawa Timur / East Java</option>
+            <option value="BALI">Bali</option>
+            <option value="ACEH">Aceh</option>
+            <option value="NORTH_SUMATRA">Sumatera Utara</option>
+            <option value="WEST_SUMATRA">Sumatera Barat</option>
+            <option value="RIAU">Riau</option>
+            <option value="RIAU_ISLANDS">Kepulauan Riau</option>
+            <option value="JAMBI">Jambi</option>
+            <option value="SOUTH_SUMATRA">Sumatera Selatan</option>
+            <option value="BANGKA">Bangka Belitung</option>
+            <option value="BENGKULU">Bengkulu</option>
+            <option value="LAMPUNG">Lampung</option>
+            <option value="WEST_KALIMANTAN">Kalimantan Barat</option>
+            <option value="CENTRAL_KALIMANTAN">Kalimantan Tengah</option>
+            <option value="SOUTH_KALIMANTAN">Kalimantan Selatan</option>
+            <option value="EAST_KALIMANTAN">Kalimantan Timur</option>
+            <option value="NORTH_KALIMANTAN">Kalimantan Utara</option>
+            <option value="NORTH_SULAWESI">Sulawesi Utara</option>
+            <option value="GORONTALO">Gorontalo</option>
+            <option value="CENTRAL_SULAWESI">Sulawesi Tengah</option>
+            <option value="WEST_SULAWESI">Sulawesi Barat</option>
+            <option value="SOUTH_SULAWESI">Sulawesi Selatan</option>
+            <option value="SOUTHEAST_SULAWESI">Sulawesi Tenggara</option>
+            <option value="WEST_NUSA">Nusa Tenggara Barat</option>
+            <option value="EAST_NUSA">Nusa Tenggara Timur</option>
+            <option value="MALUKU">Maluku</option>
+            <option value="NORTH_MALUKU">Maluku Utara</option>
+            <option value="PAPUA">Papua</option>
+            <option value="WEST_PAPUA">Papua Barat / Papua Barat Daya</option>
+            <option value="CENTRAL_PAPUA">Papua Tengah / Pegunungan / Selatan</option>
+            <option value="REMOTE">其他 / Kawasan lain</option>
+          </select>
+        </label>
+        <label>
+          <span>Postcode / Poskod（可选 / pilihan）</span>
+          <input id="indoPostcode" type="text" inputmode="numeric" maxlength="5" placeholder="Contoh: 40115">
+        </label>
+      </div>
+
+      <div class="indo-result">
+        <div class="indo-result-head">运费总数 / Jumlah Kos Penghantaran</div>
+        <div class="indo-total">
+          <strong id="indoTotalIdr">Rp0</strong>
+          <span id="indoTotalRm">约 RM0.00 / Anggaran RM0.00</span>
+        </div>
+        <div class="indo-breakdown">
+          <div><span>海运 / Laut</span><strong id="indoSeaOut">RM500.00</strong></div>
+          <div><span>印尼内陆 / Darat</span><strong id="indoInlandOut">RM0.00</strong></div>
+          <div><span>体积重量 / Berat volum</span><strong id="indoVolOut">0 kg</strong></div>
+          <div><span>计费重量 / Berat caj</span><strong id="indoChargeOut">0 kg</strong></div>
+        </div>
+        <div id="indoNote" class="indo-note">参考估算，不是物流公司正式报价。系统采用偏保守价格，避免售前报价过低。<br>Anggaran rujukan sahaja, bukan sebut harga rasmi logistik. Harga dibuat lebih konservatif untuk mengurangkan risiko terlebih murah.</div>
       </div>
     </section>
 
@@ -132,6 +228,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=3.4"></script>
+  <script src="script.js?v=3.6"></script>
 </body>
 </html>
