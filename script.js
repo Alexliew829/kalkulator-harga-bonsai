@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V3.7
+// Lover Legend Bonsai Price Calculator V4.0
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V3.7.
+// Indonesia inland estimate V4.0.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -219,7 +219,88 @@ const INDO_ZONE = {
   PAPUA:[28000,100], WEST_PAPUA:[26000,100], CENTRAL_PAPUA:[30000,100], REMOTE:[32000,100]
 };
 
-const PORT_FACTOR = { JAKARTA:1, SURABAYA:0.98, SEMARANG:0.98, MEDAN:0.98, MAKASSAR:1.00 };
+function formatIndonesiaSeaInput() {
+  const el = document.getElementById("indoSeaRm");
+  if (!el) return;
+  const value = Math.max(0, cleanNumber(el.value));
+  el.value = value.toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+
+// V4.0: 5-digit Indonesia Postcode -> province auto detection.
+// Primary lookup uses CariKodePos.ID public API (no key required). If lookup fails,
+// the province remains manually selectable so livestream use is never blocked.
+const POSTCODE_PROVINCE_MAP = {
+  "ACEH":"ACEH", "SUMATERA UTARA":"NORTH_SUMATRA", "SUMATERA BARAT":"WEST_SUMATRA",
+  "RIAU":"RIAU", "KEPULAUAN RIAU":"RIAU_ISLANDS", "JAMBI":"JAMBI",
+  "SUMATERA SELATAN":"SOUTH_SUMATRA", "BENGKULU":"BENGKULU", "LAMPUNG":"LAMPUNG",
+  "KEPULAUAN BANGKA BELITUNG":"BANGKA", "BANGKA BELITUNG":"BANGKA",
+  "DKI JAKARTA":"JAKARTA", "JAWA BARAT":"WEST_JAVA", "JAWA TENGAH":"CENTRAL_JAVA",
+  "DI YOGYAKARTA":"YOGYAKARTA", "DAERAH ISTIMEWA YOGYAKARTA":"YOGYAKARTA",
+  "JAWA TIMUR":"EAST_JAVA", "BANTEN":"BANTEN", "BALI":"BALI",
+  "NUSA TENGGARA BARAT":"WEST_NUSA", "NUSA TENGGARA TIMUR":"EAST_NUSA",
+  "KALIMANTAN BARAT":"WEST_KALIMANTAN", "KALIMANTAN TENGAH":"CENTRAL_KALIMANTAN",
+  "KALIMANTAN SELATAN":"SOUTH_KALIMANTAN", "KALIMANTAN TIMUR":"EAST_KALIMANTAN",
+  "KALIMANTAN UTARA":"NORTH_KALIMANTAN", "SULAWESI UTARA":"NORTH_SULAWESI",
+  "GORONTALO":"GORONTALO", "SULAWESI TENGAH":"CENTRAL_SULAWESI",
+  "SULAWESI BARAT":"WEST_SULAWESI", "SULAWESI SELATAN":"SOUTH_SULAWESI",
+  "SULAWESI TENGGARA":"SOUTHEAST_SULAWESI", "MALUKU":"MALUKU",
+  "MALUKU UTARA":"NORTH_MALUKU", "PAPUA BARAT":"WEST_PAPUA", "PAPUA BARAT DAYA":"WEST_PAPUA",
+  "PAPUA":"PAPUA", "PAPUA TENGAH":"CENTRAL_PAPUA", "PAPUA PEGUNUNGAN":"CENTRAL_PAPUA",
+  "PAPUA SELATAN":"CENTRAL_PAPUA"
+};
+let postcodeLookupToken = 0;
+
+function findProvinceName(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) {
+    for (const item of value) { const found=findProvinceName(item); if(found) return found; }
+    return "";
+  }
+  if (typeof value === "object") {
+    for (const key of ["province_name","provinceName","province","provinsi","province_label"]) {
+      if (value[key]) {
+        if (typeof value[key] === "string") return value[key];
+        const nested=findProvinceName(value[key]); if(nested) return nested;
+      }
+    }
+    for (const key of ["data","results","items","postal_codes","postalCodes"]) {
+      if (value[key]) { const nested=findProvinceName(value[key]); if(nested) return nested; }
+    }
+  }
+  return "";
+}
+
+async function autoDetectProvinceFromPostcode() {
+  const input=document.getElementById("indoPostcode");
+  const select=document.getElementById("indoProvince");
+  const status=document.getElementById("postcodeStatus");
+  if(!input || !select) return;
+  const pc=input.value.replace(/\D/g,"").slice(0,5);
+  input.value=pc;
+  const token=++postcodeLookupToken;
+  if(pc.length!==5){ if(status){status.textContent="先输入5位 Postcode / Masukkan 5 digit dahulu"; status.className="postcode-status";} return; }
+  if(status){status.textContent="正在识别地区… / Mengesan kawasan…"; status.className="postcode-status loading";}
+  try {
+    const res=await fetch("https://carikodepos.id/api/search?q="+encodeURIComponent(pc)+"&limit=10", {cache:"no-store"});
+    if(!res.ok) throw new Error("lookup failed");
+    const data=await res.json();
+    if(token!==postcodeLookupToken) return;
+    const provinceName=findProvinceName(data).trim().toUpperCase();
+    const key=POSTCODE_PROVINCE_MAP[provinceName];
+    if(key && Array.from(select.options).some(o=>o.value===key)){
+      select.value=key;
+      if(status){status.textContent="✓ 自动识别："+provinceName; status.className="postcode-status success";}
+      calculateIndonesiaShipping();
+    } else {
+      if(status){status.textContent="未能自动识别，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
+    }
+  } catch(e) {
+    if(token!==postcodeLookupToken) return;
+    if(status){status.textContent="网络无法查询，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
+  }
+}
 
 function calculateIndonesiaShipping() {
   const sec = indonesiaShippingEl;
@@ -231,7 +312,6 @@ function calculateIndonesiaShipping() {
   const h = Math.max(1, cleanNumber(get("indoH").value));
   const kg = Math.max(0.1, cleanNumber(get("indoKg").value));
   const province = get("indoProvince").value;
-  const port = get("indoPort").value;
   const postcode = get("indoPostcode").value.replace(/\D/g, "").slice(0,5);
   if (get("indoPostcode").value !== postcode) get("indoPostcode").value = postcode;
 
@@ -239,8 +319,7 @@ function calculateIndonesiaShipping() {
   const chargeKg = Math.max(kg, volKg);
   const z = INDO_ZONE[province] || INDO_ZONE.REMOTE;
   const billKg = Math.max(chargeKg, z[1]);
-  const portFactor = PORT_FACTOR[port] || 1;
-  let inlandIdr = z[0] * billKg * portFactor;
+  let inlandIdr = z[0] * billKg;
 
   // Conservative buffer for pre-sale quotes and unusually bulky/tall cargo.
   inlandIdr *= 1.15;
@@ -293,6 +372,22 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
   el.addEventListener("input", calculateIndonesiaShipping);
   el.addEventListener("change", calculateIndonesiaShipping);
 });
+
+const indoPostcodeInput = document.getElementById("indoPostcode");
+if (indoPostcodeInput) {
+  indoPostcodeInput.addEventListener("input", function () {
+    this.value = this.value.replace(/\D/g, "").slice(0, 5);
+    if (this.value.length === 5) autoDetectProvinceFromPostcode();
+    else { postcodeLookupToken++; const s=document.getElementById("postcodeStatus"); if(s){s.textContent="先输入5位 Postcode / Masukkan 5 digit dahulu"; s.className="postcode-status";} }
+  });
+}
+
+const indoSeaRmInput = document.getElementById("indoSeaRm");
+if (indoSeaRmInput) {
+  indoSeaRmInput.addEventListener("focus", function () { this.select(); });
+  indoSeaRmInput.addEventListener("blur", function () { formatIndonesiaSeaInput(); calculateIndonesiaShipping(); });
+  formatIndonesiaSeaInput();
+}
 
 clearBtn.addEventListener("click", function () {
   retailInput.value = "";

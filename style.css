@@ -516,7 +516,7 @@ color: #0B5ED7;
   }
 }
 
-/* V3.7: MYR default + Indonesia shipping mode + IDR total shipping emphasis */
+/* V4.0: MYR default + Indonesia shipping mode + IDR total shipping emphasis */
 .seal-logo {
   width: 48px;
   height: 48px;
@@ -664,8 +664,49 @@ color: #0B5ED7;
   .indo-grid.four { grid-template-columns: 1fr 1fr; }
 }
 
-/* V3.7: wider destination selector, compact 5-digit postcode */
-.indo-grid.destination-grid { grid-template-columns: minmax(0, 2.35fr) minmax(100px, 1fr); }
-.indo-grid.destination-grid label > span { min-height: 29px; }
-#indoPostcode { text-align:center; letter-spacing:1px; }
-@media (max-width:390px){ .indo-grid.destination-grid { grid-template-columns: minmax(0, 2.2fr) minmax(92px, .9fr); } }
+/* V4.0: balanced Indonesia shipping fields */
+.indo-grid.port-grid { grid-template-columns: minmax(0, 1.75fr) minmax(128px, .72fr); align-items:end; }
+.indo-grid.destination-grid { grid-template-columns: minmax(0, 2.65fr) minmax(92px, .72fr); align-items:end; }
+.indo-grid.port-grid label, .indo-grid.destination-grid label { display:flex; flex-direction:column; min-width:0; }
+.indo-grid.port-grid label > span, .indo-grid.destination-grid label > span { min-height:34px; display:flex; align-items:flex-end; }
+#indoPort, #indoProvince { width:100%; min-width:0; }
+#indoPostcode { text-align:center; letter-spacing:1px; width:100%; }
+.rm-input { display:flex; align-items:center; width:100%; border:1px solid #cfd8cf; border-radius:10px; background:#fff; overflow:hidden; box-sizing:border-box; }
+.rm-input:focus-within { border-color:#12663a; box-shadow:0 0 0 1px #12663a; }
+.rm-prefix { padding:0 0 0 11px; font-weight:800; color:#12663a; white-space:nowrap; }
+.rm-input #indoSeaRm { border:0 !important; outline:0 !important; box-shadow:none !important; padding-left:4px; width:100%; min-width:0; background:transparent; }
+@media (max-width:390px){
+  .indo-grid.port-grid { grid-template-columns:minmax(0, 1.65fr) minmax(112px, .75fr); }
+  .indo-grid.destination-grid { grid-template-columns:minmax(0, 2.7fr) minmax(82px, .75fr); }
+  .indo-grid.port-grid label > span, .indo-grid.destination-grid label > span { min-height:42px; }
+}
+
+/* V4.0 final: Jakarta-only sea route */
+.fixed-port {
+  width:100%; min-height:42px; display:flex; align-items:center; box-sizing:border-box;
+  padding:9px 11px; border:1px solid #cfd8cf; border-radius:10px; background:#f7faf7;
+  font-weight:800; color:#111; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.indo-grid.port-grid { grid-template-columns:minmax(0, 2.15fr) minmax(120px, .85fr); }
+.indo-grid.destination-grid { grid-template-columns:minmax(0, 2.8fr) minmax(82px, .7fr); }
+.indo-grid.destination-grid label > span { min-height:34px; align-items:flex-end; }
+#indoPostcode { max-width:100%; }
+@media (max-width:390px){
+  .indo-grid.port-grid { grid-template-columns:minmax(0, 2fr) minmax(112px, .82fr); }
+  .indo-grid.destination-grid { grid-template-columns:minmax(0, 2.85fr) minmax(78px, .68fr); }
+}
+
+
+/* V4.0: Postcode first, auto-detect customer region */
+.indo-grid.destination-grid.postcode-first { grid-template-columns:minmax(104px,.82fr) minmax(0,2.45fr); align-items:start; }
+.indo-grid.destination-grid.postcode-first label > span { min-height:34px; display:flex; align-items:flex-end; }
+.postcode-field, .province-field { min-width:0; }
+#indoPostcode { width:100%; text-align:center; letter-spacing:1px; }
+.postcode-status { display:block; margin-top:5px; min-height:28px; font-size:10.5px; line-height:1.25; font-weight:700; color:#68736a; }
+.postcode-status.loading { color:#6b5b18; }
+.postcode-status.success { color:#12663a; }
+.postcode-status.warning { color:#9a5a00; }
+@media (max-width:390px){
+  .indo-grid.destination-grid.postcode-first { grid-template-columns:minmax(92px,.78fr) minmax(0,2.35fr); gap:8px; }
+  .postcode-status { font-size:9.5px; }
+}

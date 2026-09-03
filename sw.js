@@ -1,4 +1,4 @@
-// V3.7 legacy service-worker cleanup.
+// V4.0 legacy service-worker cleanup.
 // This app no longer uses offline page caching so Home Screen always loads the latest deployment.
 self.addEventListener("install", function () {
   self.skipWaiting();

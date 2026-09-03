@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0" />
 
   <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css?v=3.7" />
+  <link rel="stylesheet" href="style.css?v=4.0" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
@@ -30,7 +30,7 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V3.7</div>
+          <div class="version">V4.0</div>
         </div>
       </div>
 
@@ -115,20 +115,14 @@
       <div class="indo-title">🇮🇩 印尼运费计算 / Kiraan Penghantaran Indonesia</div>
       <div class="indo-sub">J&T Cargo 市场参考 · 售前保守估算 / Rujukan pasaran J&T Cargo · anggaran konservatif</div>
 
-      <div class="indo-grid two">
+      <div class="indo-grid port-grid">
         <label>
-          <span>印尼港口 / Pelabuhan</span>
-          <select id="indoPort">
-            <option value="JAKARTA" selected>Jakarta - Tanjung Priok</option>
-            <option value="SURABAYA">Surabaya - Tanjung Perak</option>
-            <option value="SEMARANG">Semarang - Tanjung Emas</option>
-            <option value="MEDAN">Medan - Belawan</option>
-            <option value="MAKASSAR">Makassar</option>
-          </select>
+          <span>印尼到港 / Pelabuhan Indonesia</span>
+          <div class="fixed-port" aria-label="印尼到港 Jakarta - Tanjung Priok">Jakarta - Tanjung Priok</div>
         </label>
         <label>
-          <span>大马到港海运 / Kos laut (RM)</span>
-          <input id="indoSeaRm" type="number" min="0" step="1" value="500" inputmode="decimal">
+          <span>大马 → Jakarta 海运 / Kos Laut</span>
+          <div class="rm-input"><span class="rm-prefix">RM</span><input id="indoSeaRm" type="text" value="500.00" inputmode="decimal" aria-label="大马到 Jakarta 海运 RM"></div>
         </label>
       </div>
 
@@ -140,54 +134,54 @@
         <label><span>重量 / kg</span><input id="indoKg" type="number" min="0.1" step="0.1" value="35" inputmode="decimal"></label>
       </div>
 
-      <div class="indo-grid destination-grid">
-        <label>
+      <div class="indo-grid destination-grid postcode-first">
+        <label class="postcode-field">
+          <span>Postcode / Poskod</span>
+          <input id="indoPostcode" type="text" inputmode="numeric" maxlength="5" placeholder="5位" pattern="[0-9]{5}" autocomplete="postal-code">
+          <small id="postcodeStatus" class="postcode-status">先输入5位 Postcode / Masukkan 5 digit dahulu</small>
+        </label>
+        <label class="province-field">
           <span>客户地区 / Kawasan pelanggan</span>
           <select id="indoProvince">
-            <option value="JAKARTA" selected>DKI Jakarta / Jabodetabek</option>
+            <option value="ACEH">Aceh</option>
+            <option value="BALI">Bali</option>
+            <option value="BANGKA">Bangka Belitung</option>
             <option value="BANTEN">Banten</option>
+            <option value="BENGKULU">Bengkulu</option>
+            <option value="YOGYAKARTA">DI Yogyakarta</option>
+            <option value="JAKARTA" selected>DKI Jakarta / Jabodetabek</option>
+            <option value="GORONTALO">Gorontalo</option>
+            <option value="JAMBI">Jambi</option>
             <option value="WEST_JAVA">Jawa Barat / West Java</option>
             <option value="CENTRAL_JAVA">Jawa Tengah / Central Java</option>
-            <option value="YOGYAKARTA">DI Yogyakarta</option>
             <option value="EAST_JAVA">Jawa Timur / East Java</option>
-            <option value="BALI">Bali</option>
-            <option value="ACEH">Aceh</option>
-            <option value="NORTH_SUMATRA">Sumatera Utara</option>
-            <option value="WEST_SUMATRA">Sumatera Barat</option>
-            <option value="RIAU">Riau</option>
-            <option value="RIAU_ISLANDS">Kepulauan Riau</option>
-            <option value="JAMBI">Jambi</option>
-            <option value="SOUTH_SUMATRA">Sumatera Selatan</option>
-            <option value="BANGKA">Bangka Belitung</option>
-            <option value="BENGKULU">Bengkulu</option>
-            <option value="LAMPUNG">Lampung</option>
             <option value="WEST_KALIMANTAN">Kalimantan Barat</option>
-            <option value="CENTRAL_KALIMANTAN">Kalimantan Tengah</option>
             <option value="SOUTH_KALIMANTAN">Kalimantan Selatan</option>
+            <option value="CENTRAL_KALIMANTAN">Kalimantan Tengah</option>
             <option value="EAST_KALIMANTAN">Kalimantan Timur</option>
             <option value="NORTH_KALIMANTAN">Kalimantan Utara</option>
-            <option value="NORTH_SULAWESI">Sulawesi Utara</option>
-            <option value="GORONTALO">Gorontalo</option>
-            <option value="CENTRAL_SULAWESI">Sulawesi Tengah</option>
-            <option value="WEST_SULAWESI">Sulawesi Barat</option>
-            <option value="SOUTH_SULAWESI">Sulawesi Selatan</option>
-            <option value="SOUTHEAST_SULAWESI">Sulawesi Tenggara</option>
-            <option value="WEST_NUSA">Nusa Tenggara Barat</option>
-            <option value="EAST_NUSA">Nusa Tenggara Timur</option>
+            <option value="RIAU_ISLANDS">Kepulauan Riau</option>
+            <option value="LAMPUNG">Lampung</option>
             <option value="MALUKU">Maluku</option>
             <option value="NORTH_MALUKU">Maluku Utara</option>
+            <option value="WEST_NUSA">Nusa Tenggara Barat</option>
+            <option value="EAST_NUSA">Nusa Tenggara Timur</option>
             <option value="PAPUA">Papua</option>
             <option value="WEST_PAPUA">Papua Barat / Papua Barat Daya</option>
             <option value="CENTRAL_PAPUA">Papua Tengah / Pegunungan / Selatan</option>
+            <option value="RIAU">Riau</option>
+            <option value="WEST_SULAWESI">Sulawesi Barat</option>
+            <option value="SOUTH_SULAWESI">Sulawesi Selatan</option>
+            <option value="CENTRAL_SULAWESI">Sulawesi Tengah</option>
+            <option value="SOUTHEAST_SULAWESI">Sulawesi Tenggara</option>
+            <option value="NORTH_SULAWESI">Sulawesi Utara</option>
+            <option value="WEST_SUMATRA">Sumatera Barat</option>
+            <option value="SOUTH_SUMATRA">Sumatera Selatan</option>
+            <option value="NORTH_SUMATRA">Sumatera Utara</option>
             <option value="REMOTE">其他 / Kawasan lain</option>
           </select>
         </label>
-        <label>
-          <span>Postcode / Poskod（可选 / pilihan）</span>
-          <input id="indoPostcode" type="text" inputmode="numeric" maxlength="5" placeholder="5位" pattern="[0-9]{5}">
-        </label>
       </div>
-
       <div class="indo-result">
         <div class="indo-result-head">运费总数 / Jumlah Kos Penghantaran</div>
         <div class="indo-total">
@@ -228,6 +222,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=3.7"></script>
+  <script src="script.js?v=4.0"></script>
 </body>
 </html>
