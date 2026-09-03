@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0" />
 
   <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css?v=4.0" />
+  <link rel="stylesheet" href="style.css?v=4.1" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
@@ -30,7 +30,7 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V4.0</div>
+          <div class="version">V4.1</div>
         </div>
       </div>
 
@@ -121,17 +121,17 @@
           <div class="fixed-port" aria-label="印尼到港 Jakarta - Tanjung Priok">Jakarta - Tanjung Priok</div>
         </label>
         <label>
-          <span>大马 → Jakarta 海运 / Kos Laut</span>
-          <div class="rm-input"><span class="rm-prefix">RM</span><input id="indoSeaRm" type="text" value="500.00" inputmode="decimal" aria-label="大马到 Jakarta 海运 RM"></div>
+          <span>大马 → Jakarta 海运 / Kos Laut RM</span>
+          <input id="indoSeaRm" class="sea-rm-input" type="text" value="500.00" inputmode="decimal" aria-label="大马到 Jakarta 海运 RM">
         </label>
       </div>
 
       <div class="indo-size-title">包装尺寸 / Saiz bungkusan (cm)</div>
       <div class="indo-grid four">
-        <label><span>长 / P</span><input id="indoL" type="number" min="1" step="1" value="90" inputmode="decimal"></label>
-        <label><span>宽 / L</span><input id="indoW" type="number" min="1" step="1" value="50" inputmode="decimal"></label>
-        <label><span>高 / T</span><input id="indoH" type="number" min="1" step="1" value="90" inputmode="decimal"></label>
-        <label><span>重量 / kg</span><input id="indoKg" type="number" min="0.1" step="0.1" value="35" inputmode="decimal"></label>
+        <label><span>长 / P</span><input id="indoL" type="text" value="90" inputmode="decimal"></label>
+        <label><span>宽 / L</span><input id="indoW" type="text" value="50" inputmode="decimal"></label>
+        <label><span>高 / T</span><input id="indoH" type="text" value="90" inputmode="decimal"></label>
+        <label><span>重量 / kg</span><input id="indoKg" type="text" value="35" inputmode="decimal"></label>
       </div>
 
       <div class="indo-grid destination-grid postcode-first">
@@ -222,6 +222,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=4.0"></script>
+  <script src="script.js?v=4.1"></script>
 </body>
 </html>

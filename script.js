@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V4.0
+// Lover Legend Bonsai Price Calculator V4.1
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V4.0.
+// Indonesia inland estimate V4.1.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,7 +227,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V4.0: 5-digit Indonesia Postcode -> province auto detection.
+// V4.1: 5-digit Indonesia Postcode -> province auto detection.
 // Primary lookup uses CariKodePos.ID public API (no key required). If lookup fails,
 // the province remains manually selectable so livestream use is never blocked.
 const POSTCODE_PROVINCE_MAP = {
