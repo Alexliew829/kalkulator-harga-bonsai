@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V4.1
+// Lover Legend Bonsai Price Calculator V4.3
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V4.1.
+// Indonesia inland estimate V4.3.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,9 +227,9 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V4.1: 5-digit Indonesia Postcode -> province auto detection.
-// Primary lookup uses CariKodePos.ID public API (no key required). If lookup fails,
-// the province remains manually selectable so livestream use is never blocked.
+// V4.3: 5-digit Indonesia Postcode -> province auto detection.
+// Primary lookup uses CariKodePos.ID's postal-codes endpoint (CORS enabled, no key required).
+// The province remains manually selectable if a lookup cannot be completed.
 const POSTCODE_PROVINCE_MAP = {
   "ACEH":"ACEH", "SUMATERA UTARA":"NORTH_SUMATRA", "SUMATERA BARAT":"WEST_SUMATRA",
   "RIAU":"RIAU", "KEPULAUAN RIAU":"RIAU_ISLANDS", "JAMBI":"JAMBI",
@@ -280,10 +280,10 @@ async function autoDetectProvinceFromPostcode() {
   const pc=input.value.replace(/\D/g,"").slice(0,5);
   input.value=pc;
   const token=++postcodeLookupToken;
-  if(pc.length!==5){ if(status){status.textContent="先输入5位 Postcode / Masukkan 5 digit dahulu"; status.className="postcode-status";} return; }
-  if(status){status.textContent="正在识别地区… / Mengesan kawasan…"; status.className="postcode-status loading";}
+  if(pc.length!==5){ if(status){status.textContent=""; status.className="postcode-status"; status.hidden=true;} return; }
+  if(status){status.hidden=false; status.textContent="正在识别地区… / Mengesan kawasan…"; status.className="postcode-status loading";}
   try {
-    const res=await fetch("https://carikodepos.id/api/search?q="+encodeURIComponent(pc)+"&limit=10", {cache:"no-store"});
+    const res=await fetch("https://carikodepos.id/api/postal-codes?search="+encodeURIComponent(pc)+"&limit=10", {cache:"no-store"});
     if(!res.ok) throw new Error("lookup failed");
     const data=await res.json();
     if(token!==postcodeLookupToken) return;
@@ -291,14 +291,14 @@ async function autoDetectProvinceFromPostcode() {
     const key=POSTCODE_PROVINCE_MAP[provinceName];
     if(key && Array.from(select.options).some(o=>o.value===key)){
       select.value=key;
-      if(status){status.textContent="✓ 自动识别："+provinceName; status.className="postcode-status success";}
+      if(status){status.hidden=false; status.textContent="✓ 已识别："+provinceName+" / Kawasan dikesan"; status.className="postcode-status success";}
       calculateIndonesiaShipping();
     } else {
-      if(status){status.textContent="未能自动识别，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
+      if(status){status.hidden=false; status.textContent="未能自动识别，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
     }
   } catch(e) {
     if(token!==postcodeLookupToken) return;
-    if(status){status.textContent="网络无法查询，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
+    if(status){status.hidden=false; status.textContent="无法自动查询，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
   }
 }
 
@@ -378,7 +378,7 @@ if (indoPostcodeInput) {
   indoPostcodeInput.addEventListener("input", function () {
     this.value = this.value.replace(/\D/g, "").slice(0, 5);
     if (this.value.length === 5) autoDetectProvinceFromPostcode();
-    else { postcodeLookupToken++; const s=document.getElementById("postcodeStatus"); if(s){s.textContent="先输入5位 Postcode / Masukkan 5 digit dahulu"; s.className="postcode-status";} }
+    else { postcodeLookupToken++; const s=document.getElementById("postcodeStatus"); if(s){s.textContent=""; s.className="postcode-status"; s.hidden=true;} }
   });
 }
 
