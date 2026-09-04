@@ -366,14 +366,14 @@ async function autoDetectProvinceFromPostcode() {
   const pc=input.value.replace(/\D/g,"").slice(0,5); input.value=pc;
   const token=++postcodeLookupToken;
   if(pc.length!==5){ if(status){status.textContent=""; status.className="postcode-status"; status.hidden=true;} return; }
-  if(status){status.hidden=false; status.textContent="正在精确识别… / Mengesan tepat…"; status.className="postcode-status loading";}
+  if(status){status.textContent=""; status.className="postcode-status"; status.hidden=true;}
 
   const map=await loadExactPostcodeMap();
   if(token!==postcodeLookupToken) return;
   const exact=map && map[pc];
   if(exact && Array.from(select.options).some(o=>o.value===exact[0])){
     provinceChangeFromPostcode=true; select.value=exact[0]; provinceChangeFromPostcode=false;
-    if(status){status.hidden=false; status.textContent="✓ 精确识别："+exact[1]+" / Kawasan tepat"; status.className="postcode-status success";}
+    if(status){status.textContent=""; status.className="postcode-status"; status.hidden=true;}
     calculateIndonesiaShipping(); return;
   }
 
@@ -386,7 +386,7 @@ async function autoDetectProvinceFromPostcode() {
     const key=POSTCODE_PROVINCE_MAP[provinceName];
     if(key && Array.from(select.options).some(o=>o.value===key)){
       provinceChangeFromPostcode=true; select.value=key; provinceChangeFromPostcode=false;
-      if(status){status.hidden=false; status.textContent="✓ 精确识别："+provinceName+" / Kawasan tepat"; status.className="postcode-status success";}
+      if(status){status.textContent=""; status.className="postcode-status"; status.hidden=true;}
       calculateIndonesiaShipping();
     } else if(status){ status.hidden=false; status.textContent="未找到精确资料，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning"; }
   } catch(e) {
@@ -478,6 +478,9 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
 
 const indoPostcodeInput = document.getElementById("indoPostcode");
 if (indoPostcodeInput) {
+  // V5.1: tap/focus selects the whole postcode for one-step replace/delete.
+  indoPostcodeInput.addEventListener("focus", function () { this.select(); });
+  indoPostcodeInput.addEventListener("click", function () { this.select(); });
   indoPostcodeInput.addEventListener("input", function () {
     this.value = this.value.replace(/\D/g, "").slice(0, 5);
     if (this.value.length === 5) autoDetectProvinceFromPostcode();
