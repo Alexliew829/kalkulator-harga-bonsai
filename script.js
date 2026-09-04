@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V4.6
+// Lover Legend Bonsai Price Calculator V4.8
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V4.6.
+// Indonesia inland estimate V4.8.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,9 +227,9 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V4.6: 5-digit Indonesia Postcode -> province auto detection.
-// Primary lookup uses CariKodePos.ID's postal-codes endpoint (CORS enabled, no key required).
-// The province remains manually selectable if a lookup cannot be completed.
+// V4.8: exact 5-digit Indonesia Postcode -> province detection.
+// No broad numeric ranges are used. A national postcode dataset is loaded once,
+// converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
   "ACEH":"ACEH", "SUMATERA UTARA":"NORTH_SUMATRA", "SUMATERA BARAT":"WEST_SUMATRA",
   "RIAU":"RIAU", "KEPULAUAN RIAU":"RIAU_ISLANDS", "JAMBI":"JAMBI",
@@ -249,56 +249,120 @@ const POSTCODE_PROVINCE_MAP = {
   "PAPUA":"PAPUA", "PAPUA TENGAH":"CENTRAL_PAPUA", "PAPUA PEGUNUNGAN":"CENTRAL_PAPUA",
   "PAPUA SELATAN":"CENTRAL_PAPUA"
 };
+
+const PROVINCE_CODE_MAP = {
+  "11":["ACEH","ACEH"], "12":["NORTH_SUMATRA","SUMATERA UTARA"], "13":["WEST_SUMATRA","SUMATERA BARAT"],
+  "14":["RIAU","RIAU"], "15":["JAMBI","JAMBI"], "16":["SOUTH_SUMATRA","SUMATERA SELATAN"],
+  "17":["BENGKULU","BENGKULU"], "18":["LAMPUNG","LAMPUNG"], "19":["BANGKA","KEPULAUAN BANGKA BELITUNG"],
+  "21":["RIAU_ISLANDS","KEPULAUAN RIAU"], "31":["JAKARTA","DKI JAKARTA"], "32":["WEST_JAVA","JAWA BARAT"],
+  "33":["CENTRAL_JAVA","JAWA TENGAH"], "34":["YOGYAKARTA","DI YOGYAKARTA"], "35":["EAST_JAVA","JAWA TIMUR"],
+  "36":["BANTEN","BANTEN"], "51":["BALI","BALI"], "52":["WEST_NUSA","NUSA TENGGARA BARAT"],
+  "53":["EAST_NUSA","NUSA TENGGARA TIMUR"], "61":["WEST_KALIMANTAN","KALIMANTAN BARAT"],
+  "62":["CENTRAL_KALIMANTAN","KALIMANTAN TENGAH"], "63":["SOUTH_KALIMANTAN","KALIMANTAN SELATAN"],
+  "64":["EAST_KALIMANTAN","KALIMANTAN TIMUR"], "65":["NORTH_KALIMANTAN","KALIMANTAN UTARA"],
+  "71":["NORTH_SULAWESI","SULAWESI UTARA"], "72":["CENTRAL_SULAWESI","SULAWESI TENGAH"],
+  "73":["SOUTH_SULAWESI","SULAWESI SELATAN"], "74":["SOUTHEAST_SULAWESI","SULAWESI TENGGARA"],
+  "75":["GORONTALO","GORONTALO"], "76":["WEST_SULAWESI","SULAWESI BARAT"], "81":["MALUKU","MALUKU"],
+  "82":["NORTH_MALUKU","MALUKU UTARA"], "91":["WEST_PAPUA","PAPUA BARAT"], "92":["WEST_PAPUA","PAPUA BARAT DAYA"],
+  "94":["PAPUA","PAPUA"], "95":["CENTRAL_PAPUA","PAPUA SELATAN"], "96":["CENTRAL_PAPUA","PAPUA TENGAH"],
+  "97":["CENTRAL_PAPUA","PAPUA PEGUNUNGAN"]
+};
+
+const POSTCODE_DATA_URL = "https://raw.githubusercontent.com/cahyadsn/wilayah_kodepos/main/json/wilayah_kodepos.min.json";
+const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v48";
+let exactPostcodeMap = null;
+let exactPostcodePromise = null;
 let postcodeLookupToken = 0;
+
+function makeExactMapFromDataset(data) {
+  const out = Object.create(null);
+  const add = (regionCode, postcode) => {
+    const pc=String(postcode||"").match(/^\d{5}$/)?.[0];
+    const prov=String(regionCode||"").match(/^(\d{2})/)?.[1];
+    if(pc && prov && PROVINCE_CODE_MAP[prov]) out[pc]=PROVINCE_CODE_MAP[prov];
+  };
+  const walk = (v, parentKey="") => {
+    if(Array.isArray(v)){ v.forEach(x=>walk(x,parentKey)); return; }
+    if(!v || typeof v!=="object") return;
+    for(const [k,val] of Object.entries(v)){
+      if(typeof val==="string" || typeof val==="number"){
+        if(/^\d{2}(?:\.\d{2}){2}\.\d{4}$/.test(k)) add(k,val);
+      } else walk(val,k);
+    }
+    const region=v.kode || v.code || v.village_code || v.villageCode || parentKey;
+    const pc=v.kodepos || v.postal_code || v.postalCode || v.zip_code || v.zipCode;
+    if(region && pc) add(region,pc);
+  };
+  walk(data);
+  return out;
+}
+
+async function loadExactPostcodeMap(){
+  if(exactPostcodeMap) return exactPostcodeMap;
+  if(exactPostcodePromise) return exactPostcodePromise;
+  exactPostcodePromise=(async()=>{
+    try{
+      const cached=localStorage.getItem(POSTCODE_CACHE_KEY);
+      if(cached){ exactPostcodeMap=JSON.parse(cached); return exactPostcodeMap; }
+    }catch(e){}
+    try{
+      const res=await fetch(POSTCODE_DATA_URL,{cache:"force-cache"});
+      if(!res.ok) throw new Error("dataset failed");
+      const map=makeExactMapFromDataset(await res.json());
+      if(Object.keys(map).length<1000) throw new Error("dataset invalid");
+      exactPostcodeMap=map;
+      try{ localStorage.setItem(POSTCODE_CACHE_KEY,JSON.stringify(map)); }catch(e){}
+      return map;
+    }catch(e){ return null; }
+  })();
+  return exactPostcodePromise;
+}
 
 function findProvinceName(value) {
   if (!value) return "";
   if (typeof value === "string") return value;
-  if (Array.isArray(value)) {
-    for (const item of value) { const found=findProvinceName(item); if(found) return found; }
-    return "";
-  }
+  if (Array.isArray(value)) { for (const item of value) { const found=findProvinceName(item); if(found) return found; } return ""; }
   if (typeof value === "object") {
     for (const key of ["province_name","provinceName","province","provinsi","province_label"]) {
-      if (value[key]) {
-        if (typeof value[key] === "string") return value[key];
-        const nested=findProvinceName(value[key]); if(nested) return nested;
-      }
+      if (value[key]) { if (typeof value[key] === "string") return value[key]; const nested=findProvinceName(value[key]); if(nested) return nested; }
     }
-    for (const key of ["data","results","items","postal_codes","postalCodes"]) {
-      if (value[key]) { const nested=findProvinceName(value[key]); if(nested) return nested; }
-    }
+    for (const key of ["data","results","items","postal_codes","postalCodes"]) { if (value[key]) { const nested=findProvinceName(value[key]); if(nested) return nested; } }
   }
   return "";
 }
 
 async function autoDetectProvinceFromPostcode() {
-  const input=document.getElementById("indoPostcode");
-  const select=document.getElementById("indoProvince");
-  const status=document.getElementById("postcodeStatus");
+  const input=document.getElementById("indoPostcode"), select=document.getElementById("indoProvince"), status=document.getElementById("postcodeStatus");
   if(!input || !select) return;
-  const pc=input.value.replace(/\D/g,"").slice(0,5);
-  input.value=pc;
+  const pc=input.value.replace(/\D/g,"").slice(0,5); input.value=pc;
   const token=++postcodeLookupToken;
   if(pc.length!==5){ if(status){status.textContent=""; status.className="postcode-status"; status.hidden=true;} return; }
-  if(status){status.hidden=false; status.textContent="正在识别地区… / Mengesan kawasan…"; status.className="postcode-status loading";}
+  if(status){status.hidden=false; status.textContent="正在精确识别… / Mengesan tepat…"; status.className="postcode-status loading";}
+
+  const map=await loadExactPostcodeMap();
+  if(token!==postcodeLookupToken) return;
+  const exact=map && map[pc];
+  if(exact && Array.from(select.options).some(o=>o.value===exact[0])){
+    select.value=exact[0];
+    if(status){status.hidden=false; status.textContent="✓ 精确识别："+exact[1]+" / Kawasan tepat"; status.className="postcode-status success";}
+    calculateIndonesiaShipping(); return;
+  }
+
+  // Exact online fallback. Never guess a province from a broad postcode number range.
   try {
     const res=await fetch("https://carikodepos.id/api/postal-codes?search="+encodeURIComponent(pc)+"&limit=10", {cache:"no-store"});
     if(!res.ok) throw new Error("lookup failed");
-    const data=await res.json();
+    const provinceName=findProvinceName(await res.json()).trim().toUpperCase();
     if(token!==postcodeLookupToken) return;
-    const provinceName=findProvinceName(data).trim().toUpperCase();
     const key=POSTCODE_PROVINCE_MAP[provinceName];
     if(key && Array.from(select.options).some(o=>o.value===key)){
       select.value=key;
-      if(status){status.hidden=false; status.textContent="✓ 已识别："+provinceName+" / Kawasan dikesan"; status.className="postcode-status success";}
+      if(status){status.hidden=false; status.textContent="✓ 精确识别："+provinceName+" / Kawasan tepat"; status.className="postcode-status success";}
       calculateIndonesiaShipping();
-    } else {
-      if(status){status.hidden=false; status.textContent="未能自动识别，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
-    }
+    } else if(status){ status.hidden=false; status.textContent="未找到精确资料，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning"; }
   } catch(e) {
     if(token!==postcodeLookupToken) return;
-    if(status){status.hidden=false; status.textContent="无法自动查询，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
+    if(status){status.hidden=false; status.textContent="未找到精确资料，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning";}
   }
 }
 
@@ -321,7 +385,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V4.6: region-based commercial safety buffer for pre-sale quotes.
+  // V4.8: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
