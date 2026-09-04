@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V4.9
+// Lover Legend Bonsai Price Calculator V5.0
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V4.9.
+// Indonesia inland estimate V5.0.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,7 +227,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V4.9: exact 5-digit Indonesia Postcode -> province detection.
+// V5.0: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -268,8 +268,37 @@ const PROVINCE_CODE_MAP = {
   "97":["CENTRAL_PAPUA","PAPUA PEGUNUNGAN"]
 };
 
+
+// V5.0: representative postcode used only when the presenter manually changes region.
+// A real customer postcode entered by the user still takes priority and is precisely detected.
+const REGION_DEFAULT_POSTCODE = {
+  JAKARTA:"10310", BANTEN:"15111", WEST_JAVA:"16110", CENTRAL_JAVA:"50111", YOGYAKARTA:"55111", EAST_JAVA:"60111",
+  BALI:"80111", ACEH:"23111", NORTH_SUMATRA:"20111", WEST_SUMATRA:"25111", RIAU:"28111", RIAU_ISLANDS:"29111",
+  JAMBI:"36111", SOUTH_SUMATRA:"30111", BANGKA:"33111", BENGKULU:"38111", LAMPUNG:"35111",
+  WEST_NUSA:"83111", EAST_NUSA:"85111", WEST_KALIMANTAN:"78111", CENTRAL_KALIMANTAN:"73111", SOUTH_KALIMANTAN:"70111",
+  EAST_KALIMANTAN:"75111", NORTH_KALIMANTAN:"77111", NORTH_SULAWESI:"95111", GORONTALO:"96111", CENTRAL_SULAWESI:"94111",
+  WEST_SULAWESI:"91511", SOUTH_SULAWESI:"90111", SOUTHEAST_SULAWESI:"93111", MALUKU:"97111", NORTH_MALUKU:"97711",
+  PAPUA:"99111", WEST_PAPUA:"98311", CENTRAL_PAPUA:"98811"
+};
+let provinceChangeFromPostcode = false;
+
+function applyRepresentativePostcodeForRegion() {
+  const select=document.getElementById("indoProvince"), input=document.getElementById("indoPostcode"), status=document.getElementById("postcodeStatus");
+  if(!select || !input || provinceChangeFromPostcode) return;
+  const pc=REGION_DEFAULT_POSTCODE[select.value];
+  postcodeLookupToken++;
+  if(pc) {
+    input.value=pc;
+    if(status){ status.hidden=false; status.textContent="手动地区："+select.options[select.selectedIndex].text+" · 默认 Postcode "+pc; status.className="postcode-status success"; }
+  } else {
+    input.value="";
+    if(status){ status.hidden=false; status.textContent="手动地区，请输入客户 Postcode / Masukkan Poskod pelanggan"; status.className="postcode-status warning"; }
+  }
+  calculateIndonesiaShipping();
+}
+
 const POSTCODE_DATA_URL = "https://raw.githubusercontent.com/cahyadsn/wilayah_kodepos/main/json/wilayah_kodepos.min.json";
-const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v49";
+const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v50";
 let exactPostcodeMap = null;
 let exactPostcodePromise = null;
 let postcodeLookupToken = 0;
@@ -343,7 +372,7 @@ async function autoDetectProvinceFromPostcode() {
   if(token!==postcodeLookupToken) return;
   const exact=map && map[pc];
   if(exact && Array.from(select.options).some(o=>o.value===exact[0])){
-    select.value=exact[0];
+    provinceChangeFromPostcode=true; select.value=exact[0]; provinceChangeFromPostcode=false;
     if(status){status.hidden=false; status.textContent="✓ 精确识别："+exact[1]+" / Kawasan tepat"; status.className="postcode-status success";}
     calculateIndonesiaShipping(); return;
   }
@@ -356,7 +385,7 @@ async function autoDetectProvinceFromPostcode() {
     if(token!==postcodeLookupToken) return;
     const key=POSTCODE_PROVINCE_MAP[provinceName];
     if(key && Array.from(select.options).some(o=>o.value===key)){
-      select.value=key;
+      provinceChangeFromPostcode=true; select.value=key; provinceChangeFromPostcode=false;
       if(status){status.hidden=false; status.textContent="✓ 精确识别："+provinceName+" / Kawasan tepat"; status.className="postcode-status success";}
       calculateIndonesiaShipping();
     } else if(status){ status.hidden=false; status.textContent="未找到精确资料，请手动选择地区 / Pilih kawasan"; status.className="postcode-status warning"; }
@@ -385,7 +414,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V4.9: region-based commercial safety buffer for pre-sale quotes.
+  // V5.0: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
@@ -455,6 +484,9 @@ if (indoPostcodeInput) {
     else { postcodeLookupToken++; const s=document.getElementById("postcodeStatus"); if(s){s.textContent=""; s.className="postcode-status"; s.hidden=true;} }
   });
 }
+
+const indoProvinceSelect = document.getElementById("indoProvince");
+if (indoProvinceSelect) indoProvinceSelect.addEventListener("change", applyRepresentativePostcodeForRegion);
 
 const indoSeaRmInput = document.getElementById("indoSeaRm");
 if (indoSeaRmInput) {
