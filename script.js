@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V5.1
+// Lover Legend Bonsai Price Calculator V5.2
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -12,6 +12,7 @@ const foreignPriceEl = document.getElementById("foreignPrice");
 const rateLineEl = document.getElementById("rateLine");
 const pullRefreshEl = document.getElementById("pullRefresh");
 const indonesiaShippingEl = document.getElementById("indonesiaShipping");
+const taiwanShippingEl = document.getElementById("taiwanShipping");
 const sgSectionEl = document.querySelector(".sg-section");
 const domesticOnlyEls = document.querySelectorAll(".domestic-only");
 
@@ -126,9 +127,12 @@ function updateForeignPrice(livePrice) {
 
 function updateModeVisibility() {
   const indonesiaMode = currencySelect.value === "IDR";
-  domesticOnlyEls.forEach(function (el) { el.hidden = indonesiaMode; });
-  if (sgSectionEl) sgSectionEl.hidden = indonesiaMode;
+  const taiwanMode = currencySelect.value === "TWD";
+  const exportFreightMode = indonesiaMode || taiwanMode;
+  domesticOnlyEls.forEach(function (el) { el.hidden = exportFreightMode; });
+  if (sgSectionEl) sgSectionEl.hidden = exportFreightMode;
   if (indonesiaShippingEl) indonesiaShippingEl.hidden = !indonesiaMode;
+  if (taiwanShippingEl) taiwanShippingEl.hidden = !taiwanMode;
 }
 
 function hasRetailPrice() {
@@ -180,6 +184,7 @@ function calculate() {
   updateForeignPrice(livePrice);
   updateModeVisibility();
   calculateIndonesiaShipping();
+  calculateTaiwanShipping();
 }
 
 async function loadExchangeRates() {
@@ -201,7 +206,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V5.1.
+// Indonesia inland estimate V5.2.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,7 +232,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V5.1: exact 5-digit Indonesia Postcode -> province detection.
+// V5.2: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -269,7 +274,7 @@ const PROVINCE_CODE_MAP = {
 };
 
 
-// V5.1: representative postcode used only when the presenter manually changes region.
+// V5.2: representative postcode used only when the presenter manually changes region.
 // A real customer postcode entered by the user still takes priority and is precisely detected.
 const REGION_DEFAULT_POSTCODE = {
   JAKARTA:"10310", BANTEN:"15111", WEST_JAVA:"16110", CENTRAL_JAVA:"50111", YOGYAKARTA:"55111", EAST_JAVA:"60111",
@@ -298,7 +303,7 @@ function applyRepresentativePostcodeForRegion() {
 }
 
 const POSTCODE_DATA_URL = "https://raw.githubusercontent.com/cahyadsn/wilayah_kodepos/main/json/wilayah_kodepos.min.json";
-const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v51";
+const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v52";
 let exactPostcodeMap = null;
 let exactPostcodePromise = null;
 let postcodeLookupToken = 0;
@@ -414,7 +419,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V5.1: region-based commercial safety buffer for pre-sale quotes.
+  // V5.2: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
@@ -449,6 +454,24 @@ function calculateIndonesiaShipping() {
   note.innerHTML = "J&T Cargo 市场参考估算，不是 J&T 官方实时报价。" + pc + " 实际收费以物流公司确认为准。<br>Anggaran rujukan pasaran J&T Cargo, bukan kadar rasmi masa nyata. Caj sebenar tertakluk kepada pengesahan syarikat logistik.";
 }
 
+// Taiwan freight estimate V5.2. 3-digit district prefixes are sufficient for city/county routing.
+const TW_PREFIX = {"100":"TAIPEI","103":"TAIPEI","104":"TAIPEI","105":"TAIPEI","106":"TAIPEI","108":"TAIPEI","110":"TAIPEI","111":"TAIPEI","112":"TAIPEI","114":"TAIPEI","115":"TAIPEI","116":"TAIPEI","200":"KEELUNG","201":"KEELUNG","202":"KEELUNG","203":"KEELUNG","204":"KEELUNG","205":"KEELUNG","206":"KEELUNG","207":"NEW_TAIPEI","208":"NEW_TAIPEI","220":"NEW_TAIPEI","221":"NEW_TAIPEI","222":"NEW_TAIPEI","223":"NEW_TAIPEI","224":"NEW_TAIPEI","226":"NEW_TAIPEI","231":"NEW_TAIPEI","232":"NEW_TAIPEI","233":"NEW_TAIPEI","234":"NEW_TAIPEI","235":"NEW_TAIPEI","236":"NEW_TAIPEI","237":"NEW_TAIPEI","238":"NEW_TAIPEI","239":"NEW_TAIPEI","241":"NEW_TAIPEI","242":"NEW_TAIPEI","243":"NEW_TAIPEI","244":"NEW_TAIPEI","247":"NEW_TAIPEI","248":"NEW_TAIPEI","249":"NEW_TAIPEI","260":"YILAN","300":"HSINCHU","302":"HSINCHU","320":"TAOYUAN","330":"TAOYUAN","350":"MIAOLI","400":"TAICHUNG","500":"CHANGHUA","540":"NANTOU","600":"CHIAYI","630":"YUNLIN","700":"TAINAN","800":"KAOHSIUNG","900":"PINGTUNG","950":"TAITUNG","970":"HUALIEN"};
+const TW_DEFAULT_PC={KAOHSIUNG:"800",TAINAN:"700",CHIAYI:"600",YUNLIN:"630",CHANGHUA:"500",TAICHUNG:"400",NANTOU:"540",MIAOLI:"350",HSINCHU:"300",TAOYUAN:"330",NEW_TAIPEI:"220",TAIPEI:"100",KEELUNG:"200",YILAN:"260",HUALIEN:"970",TAITUNG:"950",PINGTUNG:"900",ISLANDS:"880"};
+// Planning rates in TWD/kg and minimum chargeable kg; conservative commercial estimates, not carrier tariffs.
+const TW_ZONE={KAOHSIUNG:[12,50],TAINAN:[14,50],CHIAYI:[16,50],YUNLIN:[17,50],CHANGHUA:[18,50],TAICHUNG:[19,50],NANTOU:[22,50],MIAOLI:[21,50],HSINCHU:[22,50],TAOYUAN:[23,50],NEW_TAIPEI:[25,50],TAIPEI:[25,50],KEELUNG:[27,50],YILAN:[28,50],HUALIEN:[32,50],TAITUNG:[34,50],PINGTUNG:[16,50],ISLANDS:[45,100]};
+function formatTWD(v){return "NT$"+Math.round(v).toLocaleString("en-US");}
+function calculateTaiwanShipping(){
+  if(!taiwanShippingEl)return; const g=id=>document.getElementById(id);
+  const sea=Math.max(0,cleanNumber(g("twSeaRm").value)), l=Math.max(1,cleanNumber(g("twL").value)), w=Math.max(1,cleanNumber(g("twW").value)), h=Math.max(1,cleanNumber(g("twH").value)), kg=Math.max(.1,cleanNumber(g("twKg").value));
+  const region=g("twRegion").value, vol=(l*w*h)/5000, charge=Math.max(kg,vol), z=TW_ZONE[region]||TW_ZONE.ISLANDS, bill=Math.max(charge,z[1]);
+  const base=z[0]*bill; const taxReserve=base*.05; const insuranceHandling=base*.02; let regional=.10; if(["YILAN","HUALIEN","TAITUNG"].includes(region))regional=.15; if(region==="ISLANDS")regional=.25;
+  let inlandTwd=base+taxReserve+insuranceHandling+(base*regional); const maxSide=Math.max(l,w,h); if(maxSide>120)inlandTwd*=1.10;if(maxSide>180)inlandTwd*=1.12; inlandTwd=roundUp(inlandTwd,100);
+  const feesTwd=roundUp(taxReserve+insuranceHandling+(base*regional),100), rate=exchangeRates.TWD>0?exchangeRates.TWD:7.85, inlandRm=roundUp(inlandTwd/rate,10), totalRm=roundUp(sea+inlandRm,10), totalTwd=roundUp(totalRm*rate,100);
+  g("twSeaOut").textContent=formatRM(sea);g("twInlandOut").textContent=formatRM(inlandRm);g("twFeesOut").textContent=formatTWD(feesTwd);g("twChargeOut").textContent=charge.toLocaleString("en-MY",{minimumFractionDigits:1,maximumFractionDigits:1})+" kg";g("twTotalTwd").textContent=formatTWD(totalTwd);g("twTotalRm").textContent="约 "+formatRM(totalRm)+" / Approx. "+formatRM(totalRm);
+}
+function syncTaiwanPostcode(){const i=document.getElementById("twPostcode"),s=document.getElementById("twRegion");if(!i||!s)return;let v=i.value.replace(/\D/g,"").slice(0,6);i.value=v;if(v.length>=3&&TW_PREFIX[v.slice(0,3)])s.value=TW_PREFIX[v.slice(0,3)];calculateTaiwanShipping();}
+function setTaiwanDefaultPostcode(){const i=document.getElementById("twPostcode"),s=document.getElementById("twRegion");if(i&&s)i.value=TW_DEFAULT_PC[s.value]||"";calculateTaiwanShipping();}
+
 retailInput.addEventListener("focus", function () { retailInput.select(); });
 retailInput.addEventListener("blur", function () {
   if (retailInput.value.trim() === "" || cleanNumber(retailInput.value) <= 0) retailInput.value = "";
@@ -471,6 +494,11 @@ livePriceEl.addEventListener("keydown", function (event) { if (event.key === "En
 
 currencySelect.addEventListener("change", calculate);
 
+document.querySelectorAll("#taiwanShipping input, #taiwanShipping select").forEach(function(el){el.addEventListener("input",calculateTaiwanShipping);el.addEventListener("change",calculateTaiwanShipping);});
+const twPostcodeInput=document.getElementById("twPostcode");if(twPostcodeInput){twPostcodeInput.addEventListener("focus",function(){this.select();});twPostcodeInput.addEventListener("click",function(){this.select();});twPostcodeInput.addEventListener("input",syncTaiwanPostcode);}
+const twRegionSelect=document.getElementById("twRegion");if(twRegionSelect)twRegionSelect.addEventListener("change",setTaiwanDefaultPostcode);
+const twSeaRmInput=document.getElementById("twSeaRm");if(twSeaRmInput){twSeaRmInput.addEventListener("focus",function(){this.select();});twSeaRmInput.addEventListener("blur",function(){this.value=cleanNumber(this.value).toFixed(2);calculateTaiwanShipping();});}
+
 document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select").forEach(function (el) {
   el.addEventListener("input", calculateIndonesiaShipping);
   el.addEventListener("change", calculateIndonesiaShipping);
@@ -478,7 +506,7 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
 
 const indoPostcodeInput = document.getElementById("indoPostcode");
 if (indoPostcodeInput) {
-  // V5.1: tap/focus selects the whole postcode for one-step replace/delete.
+  // V5.2: tap/focus selects the whole postcode for one-step replace/delete.
   indoPostcodeInput.addEventListener("focus", function () { this.select(); });
   indoPostcodeInput.addEventListener("click", function () { this.select(); });
   indoPostcodeInput.addEventListener("input", function () {

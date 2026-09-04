@@ -30,7 +30,7 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V5.1</div>
+          <div class="version">V5.2</div>
         </div>
       </div>
 
@@ -195,6 +195,33 @@
           <div><span>计费重量 / Berat caj</span><strong id="indoChargeOut">0 kg</strong></div>
         </div>
         <div id="indoNote" class="indo-note">参考估算，不是物流公司正式报价。系统采用偏保守价格，避免售前报价过低。<br>Anggaran rujukan sahaja, bukan sebut harga rasmi logistik. Harga dibuat lebih konservatif untuk mengurangkan risiko terlebih murah.</div>
+      </div>
+    </section>
+
+
+    <section id="taiwanShipping" class="indo-section" hidden>
+      <div class="indo-title">🇹🇼 台湾运费计算 / Taiwan Shipping Calculator</div>
+      <div class="indo-sub">大件物流市场参考 · 售前保守估算 / Large-cargo market reference · conservative pre-sale estimate</div>
+      <div class="indo-grid port-grid">
+        <label><span>台湾到港 / Taiwan Port</span><div class="fixed-port">Kaohsiung Port 高雄港</div></label>
+        <label><span>大马 → 高雄海运 / Sea Freight RM</span><input id="twSeaRm" class="sea-rm-input" type="text" value="500.00" inputmode="decimal"></label>
+      </div>
+      <div class="indo-size-title">包装尺寸 / Package Size (cm)</div>
+      <div class="indo-grid four">
+        <label><span>长 / L</span><input id="twL" type="text" value="90" inputmode="decimal"></label>
+        <label><span>宽 / W</span><input id="twW" type="text" value="50" inputmode="decimal"></label>
+        <label><span>高 / H</span><input id="twH" type="text" value="90" inputmode="decimal"></label>
+        <label><span>重量 / kg</span><input id="twKg" type="text" value="40" inputmode="decimal"></label>
+      </div>
+      <div class="indo-grid destination-grid postcode-first">
+        <label class="postcode-field"><span>邮递区号 / Postal Code</span><input id="twPostcode" type="text" inputmode="numeric" maxlength="6" value="800" placeholder="3或6码 / 3 or 6 digits" autocomplete="postal-code"><small id="twPostcodeStatus" class="postcode-status" hidden></small></label>
+        <label class="province-field"><span>客户地区 / Customer Area</span><select id="twRegion">
+          <option value="KAOHSIUNG" selected>高雄市 / Kaohsiung</option><option value="TAINAN">台南市 / Tainan</option><option value="CHIAYI">嘉义 / Chiayi</option><option value="YUNLIN">云林县 / Yunlin</option><option value="CHANGHUA">彰化县 / Changhua</option><option value="TAICHUNG">台中市 / Taichung</option><option value="NANTOU">南投县 / Nantou</option><option value="MIAOLI">苗栗县 / Miaoli</option><option value="HSINCHU">新竹 / Hsinchu</option><option value="TAOYUAN">桃园市 / Taoyuan</option><option value="NEW_TAIPEI">新北市 / New Taipei</option><option value="TAIPEI">台北市 / Taipei</option><option value="KEELUNG">基隆市 / Keelung</option><option value="YILAN">宜兰县 / Yilan</option><option value="HUALIEN">花莲县 / Hualien</option><option value="TAITUNG">台东县 / Taitung</option><option value="PINGTUNG">屏东县 / Pingtung</option><option value="ISLANDS">离岛 / Offshore Islands</option>
+        </select></label>
+      </div>
+      <div class="indo-result"><div class="indo-result-head">运费总数 / Total Shipping</div><div class="indo-total"><strong id="twTotalTwd">NT$0</strong><span id="twTotalRm">约 RM0.00 / Approx. RM0.00</span></div>
+        <div class="indo-breakdown"><div><span>海运 / Sea</span><strong id="twSeaOut">RM500.00</strong></div><div><span>台湾内陆 / Taiwan Inland</span><strong id="twInlandOut">RM0.00</strong></div><div><span>税/保险/杂费 / Tax, Insurance & Fees</span><strong id="twFeesOut">NT$0</strong></div><div><span>计费重量 / Chargeable Weight</span><strong id="twChargeOut">0 kg</strong></div></div>
+        <div class="indo-note">台湾内陆为市场参考估算，已加入税费、保险/处理及地区安全缓冲；不是物流公司正式报价。<br>Taiwan inland freight is a market-reference estimate including tax, insurance/handling and a regional safety buffer; not an official carrier quote.</div>
       </div>
     </section>
 
