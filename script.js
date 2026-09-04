@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V4.8
+// Lover Legend Bonsai Price Calculator V4.9
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V4.8.
+// Indonesia inland estimate V4.9.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,7 +227,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V4.8: exact 5-digit Indonesia Postcode -> province detection.
+// V4.9: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -269,7 +269,7 @@ const PROVINCE_CODE_MAP = {
 };
 
 const POSTCODE_DATA_URL = "https://raw.githubusercontent.com/cahyadsn/wilayah_kodepos/main/json/wilayah_kodepos.min.json";
-const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v48";
+const POSTCODE_CACHE_KEY = "ll_id_postcode_exact_v49";
 let exactPostcodeMap = null;
 let exactPostcodePromise = null;
 let postcodeLookupToken = 0;
@@ -385,7 +385,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V4.8: region-based commercial safety buffer for pre-sale quotes.
+  // V4.9: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
