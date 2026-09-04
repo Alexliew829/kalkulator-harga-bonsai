@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V4.4
+// Lover Legend Bonsai Price Calculator V4.5
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -201,7 +201,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V4.4.
+// Indonesia inland estimate V4.5.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -227,7 +227,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V4.4: 5-digit Indonesia Postcode -> province auto detection.
+// V4.5: 5-digit Indonesia Postcode -> province auto detection.
 // Primary lookup uses CariKodePos.ID's postal-codes endpoint (CORS enabled, no key required).
 // The province remains manually selectable if a lookup cannot be completed.
 const POSTCODE_PROVINCE_MAP = {
@@ -321,12 +321,22 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // Conservative buffer for pre-sale quotes and unusually bulky/tall cargo.
-  inlandIdr *= 1.15;
+  // V4.5: region-based commercial safety buffer for pre-sale quotes.
+  // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
+  // handling and other possible surcharges before the logistics company confirms the final charge.
+  const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
+  const BUFFER_20 = new Set(["NORTH_SUMATRA","WEST_SUMATRA","RIAU","RIAU_ISLANDS","JAMBI","SOUTH_SUMATRA","BANGKA","BENGKULU","LAMPUNG","BALI"]);
+  const BUFFER_25 = new Set(["WEST_KALIMANTAN","CENTRAL_KALIMANTAN","SOUTH_KALIMANTAN","EAST_KALIMANTAN","NORTH_KALIMANTAN","NORTH_SULAWESI","GORONTALO","CENTRAL_SULAWESI","WEST_SULAWESI","SOUTH_SULAWESI","SOUTHEAST_SULAWESI","WEST_NUSA","EAST_NUSA"]);
+  let safetyBuffer = 0.30; // Aceh, Maluku, Papua and unknown/remote areas
+  if (BUFFER_15.has(province)) safetyBuffer = 0.15;
+  else if (BUFFER_20.has(province)) safetyBuffer = 0.20;
+  else if (BUFFER_25.has(province)) safetyBuffer = 0.25;
+  inlandIdr *= (1 + safetyBuffer);
+
+  // Extra protection for unusually tall/oversize cargo.
   const maxSide = Math.max(l,w,h);
   if (maxSide > 120) inlandIdr *= 1.10;
   if (maxSide > 180) inlandIdr *= 1.12;
-  if (postcode && province !== "JAKARTA") inlandIdr *= 1.03;
   inlandIdr = roundUp(inlandIdr, 50000);
 
   const idrRate = exchangeRates.IDR > 0 ? exchangeRates.IDR : 4389.41;
