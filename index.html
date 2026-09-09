@@ -9,7 +9,7 @@
   <meta http-equiv="Expires" content="0" />
 
   <title>Kalkulator Harga Bonsai | 盆景价格计算器</title>
-  <link rel="stylesheet" href="style.css?v=4.5" />
+  <link rel="stylesheet" href="style.css?v=5.3" />
   <link rel="manifest" href="manifest.json" />
   <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 
@@ -30,7 +30,7 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V5.2</div>
+          <div class="version">V5.4</div>
         </div>
       </div>
 
@@ -49,12 +49,23 @@
     </section>
 
     <section class="price-list">
-      <div class="price-row highlight">
-        <div class="label">
-          <span class="cn">直播售价</span>
-          <span class="ms">Harga Live</span>
+      <div class="price-row highlight product-live-row">
+        <div class="product-picker">
+          <div class="product-label">产品编号 / Product ID</div>
+          <div class="product-input-wrap">
+            <input id="productIdInput" type="text" value="" placeholder="PZ..." autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <button id="clearProductBtn" type="button" aria-label="Clear product">×</button>
+          </div>
+          <div id="productName" class="product-name" hidden></div>
+          <div id="productDropdown" class="product-dropdown" hidden></div>
         </div>
-        <div class="live-input-wrap"><span class="live-rm-prefix">RM</span><input id="livePrice" class="live-price-input" type="text" inputmode="decimal" value="" placeholder="0.00" autocomplete="off" /></div>
+        <div class="live-panel">
+          <div class="label live-label">
+            <span class="cn">直播售价</span>
+            <span class="ms">Harga Live</span>
+          </div>
+          <div class="live-input-wrap"><span class="live-rm-prefix">RM</span><input id="livePrice" class="live-price-input" type="text" inputmode="decimal" value="" placeholder="0.00" autocomplete="off" /></div>
+        </div>
       </div>
 
       <div class="currency-row">
@@ -249,6 +260,6 @@
     </section>
   </main>
 
-  <script src="script.js?v=4.5"></script>
+  <script src="script.js?v=5.3"></script>
 </body>
 </html>

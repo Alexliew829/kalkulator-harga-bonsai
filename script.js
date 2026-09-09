@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V5.2
+// Lover Legend Bonsai Price Calculator V5.4
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -15,6 +15,16 @@ const indonesiaShippingEl = document.getElementById("indonesiaShipping");
 const taiwanShippingEl = document.getElementById("taiwanShipping");
 const sgSectionEl = document.querySelector(".sg-section");
 const domesticOnlyEls = document.querySelectorAll(".domestic-only");
+
+const productIdInput = document.getElementById("productIdInput");
+const productNameEl = document.getElementById("productName");
+const productDropdownEl = document.getElementById("productDropdown");
+const clearProductBtn = document.getElementById("clearProductBtn");
+const PRODUCT_API_URL = "https://script.google.com/macros/s/AKfycbxWKdEC7vy_7pZ2_CPie-9L5DeIofPggZlLuwB7gW-31HqWXEOxshtCR-HB-m5qLYS6/exec";
+let productPricingList = [];
+let productPricingLoaded = false;
+let productPricingLoading = null;
+let selectedProduct = null;
 
 const EXPORT_CERT_RM = 200;
 const PAYMENT_BUFFER = 0.03;
@@ -65,6 +75,183 @@ function formatIDR(value) {
 function getLivePrice(retail) {
   if (retail <= 500) return retail;
   return roundDown100(retail * 0.92);
+}
+
+
+// V5.4 accepted pricing logic:
+// 1) TikTok = retail -18% (x0.82), rounded to nearest RM10.
+// 2) Live price keeps the proven V5.4 rule above.
+// 3) Suggested minimum = live x80%, rounded to nearest RM10.
+// 4) Product mode preserves the exact Import minimum and finds the first safe retail price ending in 80.
+function getSuggestedMinimumFromLive(livePrice) {
+  return livePrice > 0 ? roundToNearest10(livePrice * 0.80) : 0;
+}
+
+function getRoundedTikTokPrice(retail) {
+  return retail > 0 ? roundToNearest10(retail * 0.82) : 0;
+}
+
+function reversePriceFromMinimum(importMinimum) {
+  const target = Math.max(0, Number(importMinimum) || 0);
+  if (target <= 0) return { retail: 0, live: 0, suggestedMinimum: 0 };
+
+  // V5.4 low-price product reverse rule:
+  // Import minimum -> /80% -> live rounded to nearest RM10.
+  // When that live price is <= RM500, retail must be the next STRICTLY HIGHER ...80 price.
+  // Examples: 210 -> 260 -> 280, 300 -> 380 -> 480, 380 -> 480 -> 580.
+  const directLive = roundToNearest10(target / 0.80);
+  if (directLive <= 500) {
+    const nextRetail80 = Math.floor((directLive + 20) / 100) * 100 + 80;
+    const retail = nextRetail80 <= directLive ? nextRetail80 + 100 : nextRetail80;
+    return { retail, live: directLive, suggestedMinimum: getSuggestedMinimumFromLive(directLive) };
+  }
+
+  // Higher-price products keep the accepted safe reverse logic:
+  // generate ...80 retail prices and choose the first combination whose live x80%
+  // is not below the exact Import minimum.
+  const maxRetail = Math.max(1000000, Math.ceil(target * 4));
+  for (let retail = 80; retail <= maxRetail; retail += 100) {
+    const live = getLivePrice(retail);
+    const suggestedMinimum = getSuggestedMinimumFromLive(live);
+    if (suggestedMinimum >= target) {
+      return { retail, live, suggestedMinimum };
+    }
+  }
+  const fallbackRetail = Math.ceil((target / 0.80 / 0.92) / 100) * 100 + 80;
+  const fallbackLive = getLivePrice(fallbackRetail);
+  return { retail: fallbackRetail, live: fallbackLive, suggestedMinimum: getSuggestedMinimumFromLive(fallbackLive) };
+}
+
+function normalizeProductId(value) {
+  return String(value || "").toUpperCase().replace(/\s+/g, "").trim();
+}
+
+function formatPriceInput(value) {
+  return Number(value || 0).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function setProductMode(product) {
+  selectedProduct = product || null;
+  document.body.classList.toggle("product-mode", Boolean(selectedProduct));
+  retailInput.readOnly = Boolean(selectedProduct);
+  if (!selectedProduct) {
+    if (productNameEl) { productNameEl.textContent = ""; productNameEl.hidden = true; }
+    return;
+  }
+
+  const minimum = Math.max(0, Number(selectedProduct.minimumPrice) || 0);
+  const prices = reversePriceFromMinimum(minimum);
+  retailInput.value = prices.retail > 0 ? formatPriceInput(prices.retail) : "";
+  if (productNameEl) {
+    productNameEl.textContent = selectedProduct.name || selectedProduct.id;
+    productNameEl.hidden = false;
+  }
+  calculate();
+}
+
+async function loadProductPricing(forceRetry) {
+  if (productPricingLoaded && !forceRetry) return productPricingList;
+  if (productPricingLoading) return productPricingLoading;
+  productPricingLoading = fetch(PRODUCT_API_URL, {
+    method: "POST",
+    redirect: "follow",
+    cache: "no-store",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify({ action: "publicProductPricing" })
+  }).then(function (response) {
+    if (!response.ok) throw new Error("Product pricing connection failed");
+    return response.json();
+  }).then(function (data) {
+    if (!data || !data.ok || !Array.isArray(data.products)) throw new Error("Invalid product pricing data");
+    productPricingList = data.products.map(function (product) {
+      return {
+        id: String(product.id || "").trim(),
+        normalizedId: normalizeProductId(product.id),
+        name: String(product.name || "").trim(),
+        minimumPrice: Math.max(0, Number(product.minimumPrice) || 0)
+      };
+    }).filter(function (product) { return product.normalizedId; });
+    productPricingLoaded = true;
+    return productPricingList;
+  }).catch(function (error) {
+    productPricingLoaded = false;
+    throw error;
+  }).finally(function () {
+    productPricingLoading = null;
+  });
+  return productPricingLoading;
+}
+
+function closeProductDropdown() {
+  if (!productDropdownEl) return;
+  productDropdownEl.hidden = true;
+  productDropdownEl.innerHTML = "";
+}
+
+function chooseProduct(product) {
+  if (!product || !productIdInput) return;
+  productIdInput.value = product.id;
+  closeProductDropdown();
+  setProductMode(product);
+}
+
+function renderProductMatches(query) {
+  if (!productDropdownEl) return;
+  const normalized = normalizeProductId(query);
+  if (!normalized) { closeProductDropdown(); return; }
+  const matches = productPricingList.filter(function (product) {
+    return product.normalizedId.startsWith(normalized);
+  }).slice(0, 20);
+
+  productDropdownEl.innerHTML = "";
+  if (!matches.length) {
+    const empty = document.createElement("div");
+    empty.className = "product-option-empty";
+    empty.textContent = "找不到产品编号 / Product ID not found";
+    productDropdownEl.appendChild(empty);
+    productDropdownEl.hidden = false;
+    return;
+  }
+  matches.forEach(function (product) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "product-option";
+    const strong = document.createElement("strong");
+    strong.textContent = product.id;
+    const name = document.createTextNode(" · " + (product.name || ""));
+    button.appendChild(strong);
+    button.appendChild(name);
+    button.addEventListener("click", function () { chooseProduct(product); });
+    productDropdownEl.appendChild(button);
+  });
+  productDropdownEl.hidden = false;
+}
+
+async function handleProductIdInput() {
+  if (!productIdInput) return;
+  const normalized = normalizeProductId(productIdInput.value);
+  if (!normalized) {
+    closeProductDropdown();
+    setProductMode(null);
+    calculate();
+    return;
+  }
+  try {
+    await loadProductPricing(false);
+    const exact = productPricingList.find(function (product) { return product.normalizedId === normalized; });
+    if (exact) {
+      chooseProduct(exact);
+      return;
+    }
+    if (selectedProduct) setProductMode(null);
+    renderProductMatches(productIdInput.value);
+  } catch (error) {
+    if (selectedProduct) setProductMode(null);
+    if (productDropdownEl) {
+      productDropdownEl.innerHTML = '<div class="product-option-empty">产品资料暂时无法读取 / Product data unavailable</div>';
+      productDropdownEl.hidden = false;
+    }
+  }
 }
 
 function formatRate(currency, rate) {
@@ -157,7 +344,7 @@ function setLiveInputMode(retailMode, livePrice) {
 function calculate() {
   const retailMode = hasRetailPrice();
   const retail = retailMode ? cleanNumber(retailInput.value) : 0;
-  const tiktokPrice = retail * 0.82;
+  const tiktokPrice = getRoundedTikTokPrice(retail);
   const livePrice = retailMode ? getLivePrice(retail) : getManualLivePrice();
 
   setLiveInputMode(retailMode, livePrice);
@@ -169,13 +356,9 @@ function calculate() {
   else pickupDiscount = 20;
 
   const pickupPrice = livePrice > 0 ? Math.max(0, livePrice - pickupDiscount) : 0;
-  const minimumPrice = livePrice <= 0
-    ? 0
-    : (retailMode && retail <= 500)
-      ? roundToNearest10(retail * 0.9)
-      : (!retailMode && livePrice <= 500)
-        ? roundToNearest10(livePrice * 0.9)
-        : roundToNearest50(livePrice * 0.85);
+  const minimumPrice = selectedProduct
+    ? Math.max(0, Number(selectedProduct.minimumPrice) || 0)
+    : getSuggestedMinimumFromLive(livePrice);
 
   sameRackPriceEl.textContent = sameRackDiscount;
   pickupPriceEl.textContent = formatRM(pickupPrice);
@@ -206,7 +389,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V5.2.
+// Indonesia inland estimate V5.4.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -232,7 +415,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V5.2: exact 5-digit Indonesia Postcode -> province detection.
+// V5.4: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -274,7 +457,7 @@ const PROVINCE_CODE_MAP = {
 };
 
 
-// V5.2: representative postcode used only when the presenter manually changes region.
+// V5.4: representative postcode used only when the presenter manually changes region.
 // A real customer postcode entered by the user still takes priority and is precisely detected.
 const REGION_DEFAULT_POSTCODE = {
   JAKARTA:"10310", BANTEN:"15111", WEST_JAVA:"16110", CENTRAL_JAVA:"50111", YOGYAKARTA:"55111", EAST_JAVA:"60111",
@@ -419,7 +602,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V5.2: region-based commercial safety buffer for pre-sale quotes.
+  // V5.4: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
@@ -454,7 +637,7 @@ function calculateIndonesiaShipping() {
   note.innerHTML = "J&T Cargo 市场参考估算，不是 J&T 官方实时报价。" + pc + " 实际收费以物流公司确认为准。<br>Anggaran rujukan pasaran J&T Cargo, bukan kadar rasmi masa nyata. Caj sebenar tertakluk kepada pengesahan syarikat logistik.";
 }
 
-// Taiwan freight estimate V5.2. 3-digit district prefixes are sufficient for city/county routing.
+// Taiwan freight estimate V5.4. 3-digit district prefixes are sufficient for city/county routing.
 const TW_PREFIX = {"100":"TAIPEI","103":"TAIPEI","104":"TAIPEI","105":"TAIPEI","106":"TAIPEI","108":"TAIPEI","110":"TAIPEI","111":"TAIPEI","112":"TAIPEI","114":"TAIPEI","115":"TAIPEI","116":"TAIPEI","200":"KEELUNG","201":"KEELUNG","202":"KEELUNG","203":"KEELUNG","204":"KEELUNG","205":"KEELUNG","206":"KEELUNG","207":"NEW_TAIPEI","208":"NEW_TAIPEI","220":"NEW_TAIPEI","221":"NEW_TAIPEI","222":"NEW_TAIPEI","223":"NEW_TAIPEI","224":"NEW_TAIPEI","226":"NEW_TAIPEI","231":"NEW_TAIPEI","232":"NEW_TAIPEI","233":"NEW_TAIPEI","234":"NEW_TAIPEI","235":"NEW_TAIPEI","236":"NEW_TAIPEI","237":"NEW_TAIPEI","238":"NEW_TAIPEI","239":"NEW_TAIPEI","241":"NEW_TAIPEI","242":"NEW_TAIPEI","243":"NEW_TAIPEI","244":"NEW_TAIPEI","247":"NEW_TAIPEI","248":"NEW_TAIPEI","249":"NEW_TAIPEI","260":"YILAN","300":"HSINCHU","302":"HSINCHU","320":"TAOYUAN","330":"TAOYUAN","350":"MIAOLI","400":"TAICHUNG","500":"CHANGHUA","540":"NANTOU","600":"CHIAYI","630":"YUNLIN","700":"TAINAN","800":"KAOHSIUNG","900":"PINGTUNG","950":"TAITUNG","970":"HUALIEN"};
 const TW_DEFAULT_PC={KAOHSIUNG:"800",TAINAN:"700",CHIAYI:"600",YUNLIN:"630",CHANGHUA:"500",TAICHUNG:"400",NANTOU:"540",MIAOLI:"350",HSINCHU:"300",TAOYUAN:"330",NEW_TAIPEI:"220",TAIPEI:"100",KEELUNG:"200",YILAN:"260",HUALIEN:"970",TAITUNG:"950",PINGTUNG:"900",ISLANDS:"880"};
 // Planning rates in TWD/kg and minimum chargeable kg; conservative commercial estimates, not carrier tariffs.
@@ -471,6 +654,46 @@ function calculateTaiwanShipping(){
 }
 function syncTaiwanPostcode(){const i=document.getElementById("twPostcode"),s=document.getElementById("twRegion");if(!i||!s)return;let v=i.value.replace(/\D/g,"").slice(0,6);i.value=v;if(v.length>=3&&TW_PREFIX[v.slice(0,3)])s.value=TW_PREFIX[v.slice(0,3)];calculateTaiwanShipping();}
 function setTaiwanDefaultPostcode(){const i=document.getElementById("twPostcode"),s=document.getElementById("twRegion");if(i&&s)i.value=TW_DEFAULT_PC[s.value]||"";calculateTaiwanShipping();}
+
+
+if (productIdInput) {
+  productIdInput.addEventListener("focus", function () {
+    this.select();
+    loadProductPricing(false).then(function () {
+      if (productIdInput.value.trim()) renderProductMatches(productIdInput.value);
+    }).catch(function () {});
+  });
+  productIdInput.addEventListener("click", function () { this.select(); });
+  productIdInput.addEventListener("input", function () {
+    this.value = this.value.toUpperCase();
+    handleProductIdInput();
+  });
+  productIdInput.addEventListener("keydown", function (event) {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleProductIdInput();
+      this.blur();
+    }
+  });
+}
+if (clearProductBtn) {
+  clearProductBtn.addEventListener("click", function () {
+    if (productIdInput) productIdInput.value = "";
+    closeProductDropdown();
+    setProductMode(null);
+    retailInput.value = "";
+    livePriceEl.readOnly = false;
+    livePriceEl.classList.remove("auto-live");
+    livePriceEl.value = "";
+    calculate();
+    if (productIdInput) productIdInput.focus();
+  });
+}
+document.addEventListener("click", function (event) {
+  if (!productDropdownEl || productDropdownEl.hidden) return;
+  if (event.target === productIdInput || (productDropdownEl && productDropdownEl.contains(event.target))) return;
+  closeProductDropdown();
+});
 
 retailInput.addEventListener("focus", function () { retailInput.select(); });
 retailInput.addEventListener("blur", function () {
@@ -506,7 +729,7 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
 
 const indoPostcodeInput = document.getElementById("indoPostcode");
 if (indoPostcodeInput) {
-  // V5.2: tap/focus selects the whole postcode for one-step replace/delete.
+  // V5.4: tap/focus selects the whole postcode for one-step replace/delete.
   indoPostcodeInput.addEventListener("focus", function () { this.select(); });
   indoPostcodeInput.addEventListener("click", function () { this.select(); });
   indoPostcodeInput.addEventListener("input", function () {
@@ -527,6 +750,9 @@ if (indoSeaRmInput) {
 }
 
 clearBtn.addEventListener("click", function () {
+  if (productIdInput) productIdInput.value = "";
+  closeProductDropdown();
+  setProductMode(null);
   retailInput.value = "";
   livePriceEl.readOnly = false;
   livePriceEl.classList.remove("auto-live");
@@ -536,6 +762,9 @@ clearBtn.addEventListener("click", function () {
 });
 
 function resetCalculator() {
+  if (productIdInput) productIdInput.value = "";
+  closeProductDropdown();
+  setProductMode(null);
   retailInput.value = "";
   livePriceEl.readOnly = false;
   livePriceEl.classList.remove("auto-live");
@@ -636,6 +865,7 @@ async function startCalculator() {
   resetCurrencyToDefault();
   resetCalculator();
   loadExchangeRates();
+  setTimeout(function () { loadProductPricing(false).catch(function () {}); }, 250);
 }
 
 enablePullToRefresh();
