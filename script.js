@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V5.4
+// Lover Legend Bonsai Price Calculator V5.5
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -78,9 +78,9 @@ function getLivePrice(retail) {
 }
 
 
-// V5.4 accepted pricing logic:
+// V5.5 accepted pricing logic:
 // 1) TikTok = retail -18% (x0.82), rounded to nearest RM10.
-// 2) Live price keeps the proven V5.4 rule above.
+// 2) Live price keeps the proven V5.5 rule above.
 // 3) Suggested minimum = live x80%, rounded to nearest RM10.
 // 4) Product mode preserves the exact Import minimum and finds the first safe retail price ending in 80.
 function getSuggestedMinimumFromLive(livePrice) {
@@ -95,7 +95,7 @@ function reversePriceFromMinimum(importMinimum) {
   const target = Math.max(0, Number(importMinimum) || 0);
   if (target <= 0) return { retail: 0, live: 0, suggestedMinimum: 0 };
 
-  // V5.4 low-price product reverse rule:
+  // V5.5 low-price product reverse rule:
   // Import minimum -> /80% -> live rounded to nearest RM10.
   // When that live price is <= RM500, retail must be the next STRICTLY HIGHER ...80 price.
   // Examples: 210 -> 260 -> 280, 300 -> 380 -> 480, 380 -> 480 -> 580.
@@ -126,6 +126,10 @@ function normalizeProductId(value) {
   return String(value || "").toUpperCase().replace(/\s+/g, "").trim();
 }
 
+function normalizeProductSearch(value) {
+  return String(value || "").toUpperCase().replace(/\s+/g, "").trim();
+}
+
 function formatPriceInput(value) {
   return Number(value || 0).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
@@ -143,7 +147,17 @@ function setProductMode(product) {
   const prices = reversePriceFromMinimum(minimum);
   retailInput.value = prices.retail > 0 ? formatPriceInput(prices.retail) : "";
   if (productNameEl) {
-    productNameEl.textContent = selectedProduct.name || selectedProduct.id;
+    productNameEl.innerHTML = "";
+    const idPart = document.createElement("span");
+    idPart.className = "product-name-id";
+    idPart.textContent = selectedProduct.id;
+    const sep = document.createTextNode(" · ");
+    const namePart = document.createElement("span");
+    namePart.className = "product-name-text";
+    namePart.textContent = selectedProduct.name || "";
+    productNameEl.appendChild(idPart);
+    productNameEl.appendChild(sep);
+    productNameEl.appendChild(namePart);
     productNameEl.hidden = false;
   }
   calculate();
@@ -168,6 +182,7 @@ async function loadProductPricing(forceRetry) {
         id: String(product.id || "").trim(),
         normalizedId: normalizeProductId(product.id),
         name: String(product.name || "").trim(),
+        normalizedName: normalizeProductSearch(product.name),
         minimumPrice: Math.max(0, Number(product.minimumPrice) || 0)
       };
     }).filter(function (product) { return product.normalizedId; });
@@ -197,17 +212,25 @@ function chooseProduct(product) {
 
 function renderProductMatches(query) {
   if (!productDropdownEl) return;
-  const normalized = normalizeProductId(query);
+  const normalized = normalizeProductSearch(query);
   if (!normalized) { closeProductDropdown(); return; }
+
+  // V5.5: one input searches Product ID OR product name, like the pricing calculator search.
+  // No fuzzy/reversed-letter matching: typed text must appear in the original order.
   const matches = productPricingList.filter(function (product) {
-    return product.normalizedId.startsWith(normalized);
+    const id = product.normalizedId || "";
+    const name = product.normalizedName || "";
+    const idWithoutPrefix = id.replace(/^PZ/, "");
+    return id.startsWith(normalized) ||
+      idWithoutPrefix.startsWith(normalized) ||
+      name.includes(normalized);
   }).slice(0, 20);
 
   productDropdownEl.innerHTML = "";
   if (!matches.length) {
     const empty = document.createElement("div");
     empty.className = "product-option-empty";
-    empty.textContent = "找不到产品编号 / Product ID not found";
+    empty.textContent = "找不到产品 / Product not found";
     productDropdownEl.appendChild(empty);
     productDropdownEl.hidden = false;
     return;
@@ -229,7 +252,7 @@ function renderProductMatches(query) {
 
 async function handleProductIdInput() {
   if (!productIdInput) return;
-  const normalized = normalizeProductId(productIdInput.value);
+  const normalized = normalizeProductSearch(productIdInput.value);
   if (!normalized) {
     closeProductDropdown();
     setProductMode(null);
@@ -389,7 +412,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V5.4.
+// Indonesia inland estimate V5.5.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -415,7 +438,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V5.4: exact 5-digit Indonesia Postcode -> province detection.
+// V5.5: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -457,7 +480,7 @@ const PROVINCE_CODE_MAP = {
 };
 
 
-// V5.4: representative postcode used only when the presenter manually changes region.
+// V5.5: representative postcode used only when the presenter manually changes region.
 // A real customer postcode entered by the user still takes priority and is precisely detected.
 const REGION_DEFAULT_POSTCODE = {
   JAKARTA:"10310", BANTEN:"15111", WEST_JAVA:"16110", CENTRAL_JAVA:"50111", YOGYAKARTA:"55111", EAST_JAVA:"60111",
@@ -602,7 +625,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V5.4: region-based commercial safety buffer for pre-sale quotes.
+  // V5.5: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
@@ -637,7 +660,7 @@ function calculateIndonesiaShipping() {
   note.innerHTML = "J&T Cargo 市场参考估算，不是 J&T 官方实时报价。" + pc + " 实际收费以物流公司确认为准。<br>Anggaran rujukan pasaran J&T Cargo, bukan kadar rasmi masa nyata. Caj sebenar tertakluk kepada pengesahan syarikat logistik.";
 }
 
-// Taiwan freight estimate V5.4. 3-digit district prefixes are sufficient for city/county routing.
+// Taiwan freight estimate V5.5. 3-digit district prefixes are sufficient for city/county routing.
 const TW_PREFIX = {"100":"TAIPEI","103":"TAIPEI","104":"TAIPEI","105":"TAIPEI","106":"TAIPEI","108":"TAIPEI","110":"TAIPEI","111":"TAIPEI","112":"TAIPEI","114":"TAIPEI","115":"TAIPEI","116":"TAIPEI","200":"KEELUNG","201":"KEELUNG","202":"KEELUNG","203":"KEELUNG","204":"KEELUNG","205":"KEELUNG","206":"KEELUNG","207":"NEW_TAIPEI","208":"NEW_TAIPEI","220":"NEW_TAIPEI","221":"NEW_TAIPEI","222":"NEW_TAIPEI","223":"NEW_TAIPEI","224":"NEW_TAIPEI","226":"NEW_TAIPEI","231":"NEW_TAIPEI","232":"NEW_TAIPEI","233":"NEW_TAIPEI","234":"NEW_TAIPEI","235":"NEW_TAIPEI","236":"NEW_TAIPEI","237":"NEW_TAIPEI","238":"NEW_TAIPEI","239":"NEW_TAIPEI","241":"NEW_TAIPEI","242":"NEW_TAIPEI","243":"NEW_TAIPEI","244":"NEW_TAIPEI","247":"NEW_TAIPEI","248":"NEW_TAIPEI","249":"NEW_TAIPEI","260":"YILAN","300":"HSINCHU","302":"HSINCHU","320":"TAOYUAN","330":"TAOYUAN","350":"MIAOLI","400":"TAICHUNG","500":"CHANGHUA","540":"NANTOU","600":"CHIAYI","630":"YUNLIN","700":"TAINAN","800":"KAOHSIUNG","900":"PINGTUNG","950":"TAITUNG","970":"HUALIEN"};
 const TW_DEFAULT_PC={KAOHSIUNG:"800",TAINAN:"700",CHIAYI:"600",YUNLIN:"630",CHANGHUA:"500",TAICHUNG:"400",NANTOU:"540",MIAOLI:"350",HSINCHU:"300",TAOYUAN:"330",NEW_TAIPEI:"220",TAIPEI:"100",KEELUNG:"200",YILAN:"260",HUALIEN:"970",TAITUNG:"950",PINGTUNG:"900",ISLANDS:"880"};
 // Planning rates in TWD/kg and minimum chargeable kg; conservative commercial estimates, not carrier tariffs.
@@ -665,7 +688,6 @@ if (productIdInput) {
   });
   productIdInput.addEventListener("click", function () { this.select(); });
   productIdInput.addEventListener("input", function () {
-    this.value = this.value.toUpperCase();
     handleProductIdInput();
   });
   productIdInput.addEventListener("keydown", function (event) {
@@ -695,7 +717,25 @@ document.addEventListener("click", function (event) {
   closeProductDropdown();
 });
 
-retailInput.addEventListener("focus", function () { retailInput.select(); });
+function switchToManualRetailMode() {
+  if (!selectedProduct) return;
+  selectedProduct = null;
+  document.body.classList.remove("product-mode");
+  retailInput.readOnly = false;
+  if (productIdInput) productIdInput.value = "";
+  if (productNameEl) { productNameEl.innerHTML = ""; productNameEl.hidden = true; }
+  closeProductDropdown();
+  livePriceEl.readOnly = false;
+  livePriceEl.classList.remove("auto-live");
+}
+
+retailInput.addEventListener("pointerdown", function () {
+  if (selectedProduct) switchToManualRetailMode();
+});
+retailInput.addEventListener("focus", function () {
+  if (selectedProduct) switchToManualRetailMode();
+  retailInput.select();
+});
 retailInput.addEventListener("blur", function () {
   if (retailInput.value.trim() === "" || cleanNumber(retailInput.value) <= 0) retailInput.value = "";
   else retailInput.value = cleanNumber(retailInput.value).toLocaleString("en-MY", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -729,7 +769,7 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
 
 const indoPostcodeInput = document.getElementById("indoPostcode");
 if (indoPostcodeInput) {
-  // V5.4: tap/focus selects the whole postcode for one-step replace/delete.
+  // V5.5: tap/focus selects the whole postcode for one-step replace/delete.
   indoPostcodeInput.addEventListener("focus", function () { this.select(); });
   indoPostcodeInput.addEventListener("click", function () { this.select(); });
   indoPostcodeInput.addEventListener("input", function () {
