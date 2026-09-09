@@ -786,7 +786,7 @@ color: #0B5ED7;
 }
 
 
-/* V5.5 product lookup: compact ID/product search + wider live price. */
+/* V5.6 product lookup: compact ID/product search + wider live price. */
 .product-live-row {
   align-items: stretch;
   position: relative;
@@ -910,4 +910,39 @@ color: #0B5ED7;
   .live-input-wrap { min-width: 0; max-width: 100%; width: 100%; }
   .live-rm-prefix, .live-price-input { font-size: 24px; }
   .live-price-input { min-width: 0; }
+}
+
+/* V5.6: compact product picker and guarantee full live-price visibility. */
+.product-picker {
+  width: 38%;
+  flex: 0 0 38%;
+}
+.live-panel {
+  width: 62%;
+  flex: 1 1 62%;
+  overflow: visible;
+}
+.live-input-wrap {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  overflow: visible;
+}
+.live-rm-prefix {
+  flex: 0 0 auto;
+}
+.live-price-input {
+  flex: 1 1 auto;
+  width: 0;
+  min-width: 0;
+  max-width: none;
+  overflow: visible;
+}
+@media (max-width: 430px) {
+  .product-picker { width: 36%; flex-basis: 36%; padding-right: 4px; }
+  .live-panel { width: 64%; flex-basis: 64%; }
+  #productIdInput { font-size: 13px; padding-left: 5px; padding-right: 3px; }
+  #clearProductBtn { width: 25px; font-size: 18px; }
+  .product-name { font-size: 9px; }
+  .live-rm-prefix, .live-price-input { font-size: 23px; }
 }
