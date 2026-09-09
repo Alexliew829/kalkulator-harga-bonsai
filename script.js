@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V5.8
+// Lover Legend Bonsai Price Calculator V5.9
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -68,6 +68,13 @@ function formatRM(value) {
   });
 }
 
+function formatMoney(value) {
+  return Number(value || 0).toLocaleString("en-MY", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  });
+}
+
 function formatIDR(value) {
   return "Rp" + Math.round(value).toLocaleString("id-ID");
 }
@@ -78,9 +85,9 @@ function getLivePrice(retail) {
 }
 
 
-// V5.8 accepted pricing logic:
+// V5.9 accepted pricing logic:
 // 1) TikTok = retail -18% (x0.82), rounded to nearest RM10.
-// 2) Live price keeps the proven V5.8 rule above.
+// 2) Live price keeps the proven V5.9 rule above.
 // 3) Suggested minimum = live x80%, rounded to nearest RM10.
 // 4) Product mode preserves the exact Import minimum and finds the first safe retail price ending in 80.
 function getSuggestedMinimumFromLive(livePrice) {
@@ -95,7 +102,7 @@ function reversePriceFromMinimum(importMinimum) {
   const target = Math.max(0, Number(importMinimum) || 0);
   if (target <= 0) return { retail: 0, live: 0, suggestedMinimum: 0 };
 
-  // V5.8 low-price product reverse rule:
+  // V5.9 low-price product reverse rule:
   // Import minimum -> /80% -> live rounded to nearest RM10.
   // When that live price is <= RM500, retail must be the next STRICTLY HIGHER ...80 price.
   // Examples: 210 -> 260 -> 280, 300 -> 380 -> 480, 380 -> 480 -> 580.
@@ -146,7 +153,7 @@ function setProductMode(product) {
   const minimum = Math.max(0, Number(selectedProduct.minimumPrice) || 0);
   const prices = reversePriceFromMinimum(minimum);
 
-  // V5.8: never inherit the previous product's generated prices.
+  // V5.9: never inherit the previous product's generated prices.
   // This is especially important when the newly typed exact PZ has minimumPrice = 0/blank.
   retailInput.value = prices.retail > 0 ? formatPriceInput(prices.retail) : "";
   livePriceEl.value = prices.live > 0 ? formatPriceInput(prices.live) : "";
@@ -167,21 +174,40 @@ function setProductMode(product) {
   calculate();
 }
 
-async function loadProductPricing(forceRetry) {
-  if (productPricingLoaded && !forceRetry) return productPricingList;
-  if (productPricingLoading) return productPricingLoading;
-  productPricingLoading = fetch(PRODUCT_API_URL, {
+async function fetchProductPricingOnce() {
+  const response = await fetch(PRODUCT_API_URL, {
     method: "POST",
     redirect: "follow",
     cache: "no-store",
     headers: { "Content-Type": "text/plain;charset=utf-8" },
     body: JSON.stringify({ action: "publicProductPricing" })
-  }).then(function (response) {
-    if (!response.ok) throw new Error("Product pricing connection failed");
-    return response.json();
-  }).then(function (data) {
-    if (!data || !data.ok || !Array.isArray(data.products)) throw new Error("Invalid product pricing data");
-    productPricingList = data.products.map(function (product) {
+  });
+  if (!response.ok) throw new Error("Product pricing connection failed");
+  const data = await response.json();
+  if (!data || !data.ok || !Array.isArray(data.products)) throw new Error("Invalid product pricing data");
+  return data.products;
+}
+
+async function loadProductPricing(forceRetry) {
+  if (productPricingLoaded && !forceRetry) return productPricingList;
+  if (productPricingLoading) return productPricingLoading;
+
+  productPricingLoading = (async function () {
+    let rawProducts;
+    let lastError;
+    // V5.9: Apps Script can occasionally be cold/transient. Retry once before showing unavailable.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      try {
+        rawProducts = await fetchProductPricingOnce();
+        break;
+      } catch (error) {
+        lastError = error;
+        if (attempt === 0) await new Promise(function (resolve) { setTimeout(resolve, 450); });
+      }
+    }
+    if (!rawProducts) throw lastError || new Error("Product pricing unavailable");
+
+    productPricingList = rawProducts.map(function (product) {
       return {
         id: String(product.id || "").trim(),
         normalizedId: normalizeProductId(product.id),
@@ -192,7 +218,7 @@ async function loadProductPricing(forceRetry) {
     }).filter(function (product) { return product.normalizedId; });
     productPricingLoaded = true;
     return productPricingList;
-  }).catch(function (error) {
+  })().catch(function (error) {
     productPricingLoaded = false;
     throw error;
   }).finally(function () {
@@ -219,7 +245,7 @@ function renderProductMatches(query) {
   const normalized = normalizeProductSearch(query);
   if (!normalized) { closeProductDropdown(); return; }
 
-  // V5.8: one input searches Product ID OR product name, like the pricing calculator search.
+  // V5.9: one input searches Product ID OR product name, like the pricing calculator search.
   // No fuzzy/reversed-letter matching: typed text must appear in the original order.
   const matches = productPricingList.filter(function (product) {
     const id = product.normalizedId || "";
@@ -268,7 +294,7 @@ async function handleProductIdInput() {
   try {
     await loadProductPricing(false);
 
-    // V5.8: a complete valid PZ typed directly must behave exactly like clicking a dropdown result.
+    // V5.9: a complete valid PZ typed directly must behave exactly like clicking a dropdown result.
     const exact = productPricingList.find(function (product) { return product.normalizedId === normalized; });
     if (exact) {
       chooseProduct(exact);
@@ -328,7 +354,7 @@ function formatIDRCompact(value) {
 }
 
 function formatForeignPrice(currency, value) {
-  // V5.8: MYR/TWD are already named in the currency selector, so the large
+  // V5.9: MYR/TWD are already named in the currency selector, so the large
   // number does not repeat RM or NT$. This prevents high values being clipped.
   if (currency === "MYR") {
     return Number(value || 0).toLocaleString("en-MY", {
@@ -439,7 +465,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V5.8.
+// Indonesia inland estimate V5.9.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -465,7 +491,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V5.8: exact 5-digit Indonesia Postcode -> province detection.
+// V5.9: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -507,7 +533,7 @@ const PROVINCE_CODE_MAP = {
 };
 
 
-// V5.8: representative postcode used only when the presenter manually changes region.
+// V5.9: representative postcode used only when the presenter manually changes region.
 // A real customer postcode entered by the user still takes priority and is precisely detected.
 const REGION_DEFAULT_POSTCODE = {
   JAKARTA:"10310", BANTEN:"15111", WEST_JAVA:"16110", CENTRAL_JAVA:"50111", YOGYAKARTA:"55111", EAST_JAVA:"60111",
@@ -652,7 +678,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V5.8: region-based commercial safety buffer for pre-sale quotes.
+  // V5.9: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
@@ -687,7 +713,7 @@ function calculateIndonesiaShipping() {
   note.innerHTML = "J&T Cargo 市场参考估算，不是 J&T 官方实时报价。" + pc + " 实际收费以物流公司确认为准。<br>Anggaran rujukan pasaran J&T Cargo, bukan kadar rasmi masa nyata. Caj sebenar tertakluk kepada pengesahan syarikat logistik.";
 }
 
-// Taiwan freight estimate V5.8. 3-digit district prefixes are sufficient for city/county routing.
+// Taiwan freight estimate V5.9. 3-digit district prefixes are sufficient for city/county routing.
 const TW_PREFIX = {"100":"TAIPEI","103":"TAIPEI","104":"TAIPEI","105":"TAIPEI","106":"TAIPEI","108":"TAIPEI","110":"TAIPEI","111":"TAIPEI","112":"TAIPEI","114":"TAIPEI","115":"TAIPEI","116":"TAIPEI","200":"KEELUNG","201":"KEELUNG","202":"KEELUNG","203":"KEELUNG","204":"KEELUNG","205":"KEELUNG","206":"KEELUNG","207":"NEW_TAIPEI","208":"NEW_TAIPEI","220":"NEW_TAIPEI","221":"NEW_TAIPEI","222":"NEW_TAIPEI","223":"NEW_TAIPEI","224":"NEW_TAIPEI","226":"NEW_TAIPEI","231":"NEW_TAIPEI","232":"NEW_TAIPEI","233":"NEW_TAIPEI","234":"NEW_TAIPEI","235":"NEW_TAIPEI","236":"NEW_TAIPEI","237":"NEW_TAIPEI","238":"NEW_TAIPEI","239":"NEW_TAIPEI","241":"NEW_TAIPEI","242":"NEW_TAIPEI","243":"NEW_TAIPEI","244":"NEW_TAIPEI","247":"NEW_TAIPEI","248":"NEW_TAIPEI","249":"NEW_TAIPEI","260":"YILAN","300":"HSINCHU","302":"HSINCHU","320":"TAOYUAN","330":"TAOYUAN","350":"MIAOLI","400":"TAICHUNG","500":"CHANGHUA","540":"NANTOU","600":"CHIAYI","630":"YUNLIN","700":"TAINAN","800":"KAOHSIUNG","900":"PINGTUNG","950":"TAITUNG","970":"HUALIEN"};
 const TW_DEFAULT_PC={KAOHSIUNG:"800",TAINAN:"700",CHIAYI:"600",YUNLIN:"630",CHANGHUA:"500",TAICHUNG:"400",NANTOU:"540",MIAOLI:"350",HSINCHU:"300",TAOYUAN:"330",NEW_TAIPEI:"220",TAIPEI:"100",KEELUNG:"200",YILAN:"260",HUALIEN:"970",TAITUNG:"950",PINGTUNG:"900",ISLANDS:"880"};
 // Planning rates in TWD/kg and minimum chargeable kg; conservative commercial estimates, not carrier tariffs.
@@ -796,7 +822,7 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
 
 const indoPostcodeInput = document.getElementById("indoPostcode");
 if (indoPostcodeInput) {
-  // V5.8: tap/focus selects the whole postcode for one-step replace/delete.
+  // V5.9: tap/focus selects the whole postcode for one-step replace/delete.
   indoPostcodeInput.addEventListener("focus", function () { this.select(); });
   indoPostcodeInput.addEventListener("click", function () { this.select(); });
   indoPostcodeInput.addEventListener("input", function () {
