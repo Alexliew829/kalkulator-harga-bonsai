@@ -786,7 +786,7 @@ color: #0B5ED7;
 }
 
 
-/* V6.2 product lookup: compact ID/product search + wider live price. */
+/* V6.1 product lookup: compact ID/product search + wider live price. */
 .product-live-row {
   align-items: stretch;
   position: relative;
@@ -912,7 +912,7 @@ color: #0B5ED7;
   .live-price-input { min-width: 0; }
 }
 
-/* V6.2: compact product picker and guarantee full live-price visibility. */
+/* V6.1: compact product picker and guarantee full live-price visibility. */
 .product-picker {
   width: 38%;
   flex: 0 0 38%;
@@ -945,82 +945,4 @@ color: #0B5ED7;
   #clearProductBtn { width: 25px; font-size: 18px; }
   .product-name { font-size: 9px; }
   .live-rm-prefix, .live-price-input { font-size: 23px; }
-}
-
-/* V6.2: Product label + search box share the first line; full product identity below. */
-.product-picker {
-  display: grid;
-  grid-template-columns: max-content minmax(0, 1fr);
-  grid-template-rows: auto auto;
-  column-gap: 6px;
-  row-gap: 3px;
-  width: 56%;
-  flex: 0 0 56%;
-  padding-right: 7px;
-  align-content: center;
-}
-.product-label {
-  grid-column: 1;
-  grid-row: 1;
-  margin: 0;
-  align-self: center;
-  white-space: nowrap;
-  font-size: 12px;
-}
-.product-input-wrap {
-  grid-column: 2;
-  grid-row: 1;
-  width: 100%;
-  min-width: 0;
-  height: 34px;
-}
-#productIdInput {
-  min-width: 0;
-  font-size: 14px;
-  padding-left: 5px;
-  padding-right: 2px;
-}
-.product-name {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  width: 100%;
-  margin-top: 0;
-  font-size: 10.5px;
-  line-height: 1.15;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: clip;
-  overflow-wrap: anywhere;
-}
-.product-name-id {
-  font-size: 0.82em;
-}
-.product-dropdown {
-  left: 0;
-  right: 7px;
-  top: 100%;
-}
-.live-panel {
-  width: 44%;
-  flex: 1 1 44%;
-  padding-left: 6px;
-}
-
-@media (max-width: 430px) {
-  .product-picker {
-    width: 56%;
-    flex-basis: 56%;
-    grid-template-columns: max-content minmax(0, 1fr);
-    column-gap: 4px;
-    padding-right: 5px;
-  }
-  .product-label { font-size: 10.5px; }
-  .product-input-wrap { height: 32px; }
-  #productIdInput { font-size: 13px; padding-left: 4px; }
-  #clearProductBtn { width: 23px; font-size: 17px; }
-  .product-name { font-size: 9.5px; }
-  .live-panel { width: 44%; flex-basis: 44%; padding-left: 4px; }
-  .live-label .cn { font-size: 14px; }
-  .live-label .ms { font-size: 12px; }
-  .live-rm-prefix, .live-price-input { font-size: 21px; }
 }
