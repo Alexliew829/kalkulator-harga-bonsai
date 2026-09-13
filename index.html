@@ -30,7 +30,7 @@
         <div class="title-ms">Kalkulator Harga Bonsai</div>
         <div class="company-line">
           <div class="company">Lover Legend Gardening</div>
-          <div class="version">V6.5</div>
+          <div class="version">V6.6</div>
         </div>
       </div>
 
@@ -49,19 +49,17 @@
     </section>
 
     <section class="price-list">
-      <div class="price-row highlight product-live-row">
-        <div class="product-picker">
+      <div class="price-row highlight product-only-row">
+        <div class="product-picker product-picker-full">
           <div class="product-label">产品编号 / Product ID</div>
-          <div class="product-input-wrap">
-            <input id="productIdInput" type="text" value="" placeholder="BX / 产品" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-            <button id="clearProductBtn" type="button" aria-label="Clear product">×</button>
+          <div class="product-two-boxes">
+            <div class="product-input-wrap product-id-box">
+              <input id="productIdInput" type="text" value="" placeholder="BX / 产品" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+              <button id="clearProductBtn" type="button" aria-label="Clear product">×</button>
+            </div>
+            <div id="productName" class="product-name product-name-box" hidden></div>
           </div>
-          <div id="productName" class="product-name" hidden></div>
           <div id="productDropdown" class="product-dropdown" hidden></div>
-        </div>
-        <div class="live-panel">
-          <div class="label live-label">直播售价 / Harga Live</div>
-          <div class="live-input-wrap"><input id="livePrice" class="live-price-input" type="text" inputmode="decimal" value="" placeholder="0.00" autocomplete="off" /></div>
         </div>
       </div>
 
@@ -73,7 +71,11 @@
             <option value="TWD">台币 TWD</option>
             <option value="USD">美金 USD</option>
           </select>
-          <strong id="foreignPrice">0 jt</strong>
+          <div class="live-below-panel">
+            <div class="live-below-label">直播售价 / Harga Live</div>
+            <div class="live-input-wrap"><input id="livePrice" class="live-price-input" type="text" inputmode="decimal" value="" placeholder="0.00" autocomplete="off" /></div>
+            <strong id="foreignPrice" hidden>0 jt</strong>
+          </div>
         </div>
         <div class="rate-line" id="rateLine">Rate: 读取中...</div>
       </div>
