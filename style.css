@@ -786,7 +786,7 @@ color: #0B5ED7;
 }
 
 
-/* V6.3 product lookup: compact ID/product search + wider live price. */
+/* V6.4 product lookup: compact ID/product search + wider live price. */
 .product-live-row {
   align-items: stretch;
   position: relative;
@@ -912,7 +912,7 @@ color: #0B5ED7;
   .live-price-input { min-width: 0; }
 }
 
-/* V6.3: compact product picker and guarantee full live-price visibility. */
+/* V6.4: compact product picker and guarantee full live-price visibility. */
 .product-picker {
   width: 38%;
   flex: 0 0 38%;
@@ -946,3 +946,4 @@ color: #0B5ED7;
   .product-name { font-size: 9px; }
   .live-rm-prefix, .live-price-input { font-size: 23px; }
 }
+\n\n/* V6.4 layout-only refinement: wider product area, full product name, one-line live label, no duplicate RM prefix. */\n.product-picker {\n  width: 54%;\n  flex: 0 0 54%;\n  padding-right: 7px;\n}\n.live-panel {\n  width: 46%;\n  flex: 1 1 46%;\n}\n.product-name {\n  white-space: normal;\n  overflow: visible;\n  text-overflow: clip;\n  overflow-wrap: anywhere;\n  word-break: break-word;\n  line-height: 1.2;\n}\n.live-label {\n  white-space: nowrap;\n  display: flex;\n  justify-content: flex-end;\n  align-items: baseline;\n  gap: 0;\n  font-size: 13px;\n  line-height: 1.1;\n}\n.live-label .cn,\n.live-label .ms,\n.live-label .live-slash {\n  display: inline;\n  font-size: inherit;\n}\n.live-input-wrap {\n  justify-content: flex-end;\n}\n.live-price-input {\n  width: 100%;\n  flex: 1 1 100%;\n  text-align: right;\n}\n@media (max-width: 430px) {\n  .product-picker { width: 55%; flex-basis: 55%; padding-right: 5px; }\n  .live-panel { width: 45%; flex-basis: 45%; }\n  .product-label { font-size: 11px; white-space: nowrap; }\n  #productIdInput { font-size: 15px; padding-left: 6px; padding-right: 3px; }\n  #clearProductBtn { width: 25px; font-size: 18px; }\n  .product-name { font-size: 9.5px; line-height: 1.18; }\n  .live-label { font-size: 11.5px; }\n  .live-price-input { font-size: 22px; }\n}\n
