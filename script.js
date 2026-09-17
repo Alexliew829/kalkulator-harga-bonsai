@@ -1,4 +1,4 @@
-// Lover Legend Bonsai Price Calculator V7.0
+// Lover Legend Bonsai Price Calculator V6.9
 const retailInput = document.getElementById("retailPrice");
 const clearBtn = document.getElementById("clearBtn");
 
@@ -21,17 +21,11 @@ const productNameEl = document.getElementById("productName");
 const productDropdownEl = document.getElementById("productDropdown");
 const clearProductBtn = document.getElementById("clearProductBtn");
 const PRODUCT_API_URL = "https://script.google.com/macros/s/AKfycbxWKdEC7vy_7pZ2_CPie-9L5DeIofPggZlLuwB7gW-31HqWXEOxshtCR-HB-m5qLYS6/exec";
-const PRODUCT_PRICING_CACHE_KEY = "ll_bonsai_product_pricing_v70";
+const PRODUCT_PRICING_CACHE_KEY = "ll_bonsai_product_pricing_v69";
 let productPricingList = [];
 let productPricingLoaded = false;
 let productPricingLoading = null;
 let selectedProduct = null;
-
-// V7.0: exact Original Cost search bridge. Pure numeric queries are reserved
-// exclusively for Original Cost matching, following Import V21.8 semantics.
-// Normal ID/name searches remain local and unchanged.
-const originalCostSearchCacheV70 = new Map();
-let originalCostSearchSequenceV70 = 0;
 
 const EXPORT_CERT_RM = 200;
 const PAYMENT_BUFFER = 0.03;
@@ -95,7 +89,7 @@ function getLivePrice(retail) {
   return Math.max(500, roundDown50(retail * 0.92));
 }
 
-// V7.0 pricing logic:
+// V6.9 pricing logic:
 // 1) TikTok = retail -18% (x0.82), rounded to nearest RM10.
 // 2) Manual retail mode: <=RM500 keeps live=retail; >RM500 uses x0.92,
 //    rounded DOWN to RM50, with a RM500 live-price floor to prevent 500/501 inversion.
@@ -154,24 +148,6 @@ function normalizeProductSearch(value) {
   return String(value || "").toUpperCase().replace(/\s+/g, "").trim();
 }
 
-function parseOriginalCostSearchQueryV70(queryValue) {
-  const text = String(queryValue || "")
-    .normalize("NFKC")
-    .replace(/[,，\s]/g, "");
-  if (!/^\d+(?:\.\d+)?$/.test(text)) return null;
-  const value = Number(text);
-  return Number.isFinite(value) ? value : null;
-}
-
-function isOriginalCostOnlySearchV70(queryValue) {
-  return parseOriginalCostSearchQueryV70(queryValue) !== null;
-}
-
-function originalCostSearchKeyV70(queryValue) {
-  const value = parseOriginalCostSearchQueryV70(queryValue);
-  return value === null ? "" : String(value);
-}
-
 const PRODUCT_PREFIX_RULES_V61 = [["黄杨","BX"],["凌珊","BB"],["罗汉松","PD"],["李氏樱桃","SK"],["水梅","JL"],["酸豆","AS"],["寿娘子","SC"],["三角梅","BV"],["七里香","MR"],["九里香","MR"],["仙丹","IX"],["福建茶","HK"]];
 const LEGACY_PRODUCT_ID_ALIASES_V61 = Object.freeze({
   PS0001: "BX0001",
@@ -215,7 +191,7 @@ function setProductMode(product) {
   const minimum = Math.max(0, Number(selectedProduct.minimumPrice) || 0);
   const prices = reversePriceFromMinimum(minimum);
 
-  // V7.0 product mode: Import minimum is the absolute floor.
+  // V6.9 product mode: Import minimum is the absolute floor.
   // Do not generate/show a retail price because the physical tree already has its own tag price.
   // Keep the proven V6.8 reverse-live mapping so existing product prices do not unexpectedly shift.
   retailInput.value = "";
@@ -238,27 +214,6 @@ async function fetchProductPricingOnce() {
   const data = await response.json();
   if (!data || !data.ok || !Array.isArray(data.products)) throw new Error("Invalid product pricing data");
   return data.products;
-}
-
-async function fetchProductsByOriginalCostV70(queryValue) {
-  const exactCost = parseOriginalCostSearchQueryV70(queryValue);
-  if (exactCost === null) return [];
-  const response = await fetch(PRODUCT_API_URL, {
-    method: "POST",
-    redirect: "follow",
-    cache: "no-store",
-    headers: { "Content-Type": "text/plain;charset=utf-8" },
-    body: JSON.stringify({
-      action: "publicProductOriginalCostSearchV70",
-      originalCost: exactCost
-    })
-  });
-  if (!response.ok) throw new Error("Original Cost search connection failed");
-  const data = await response.json();
-  if (!data || !data.ok || !Array.isArray(data.products)) {
-    throw new Error("Original Cost search unavailable");
-  }
-  return normalizeProductPricingList(data.products);
 }
 
 function normalizeProductPricingList(rawProducts) {
@@ -364,8 +319,23 @@ function chooseProduct(product) {
   setProductMode(product);
 }
 
-function renderProductMatchListV70(matches) {
+function renderProductMatches(query) {
   if (!productDropdownEl) return;
+  const normalized = normalizeProductSearch(query);
+  if (!normalized) { closeProductDropdown(); return; }
+
+  // V6.9: one input searches Product ID OR product name, like the pricing calculator search.
+  // No fuzzy/reversed-letter matching: typed text must appear in the original order.
+  const matches = productPricingList.filter(function (product) {
+    const id = product.normalizedId || "";
+    const name = product.normalizedName || "";
+    const aliases = product.compatibleIds || [id];
+    const idWithoutPrefix = aliases.map(value => value.replace(/^[A-Z]{2}/, ""));
+    return aliases.some(value => value.startsWith(normalized)) ||
+      idWithoutPrefix.some(value => value.startsWith(normalized)) ||
+      name.includes(normalized);
+  }).slice(0, 20);
+
   productDropdownEl.innerHTML = "";
   if (!matches.length) {
     const empty = document.createElement("div");
@@ -375,7 +345,7 @@ function renderProductMatchListV70(matches) {
     productDropdownEl.hidden = false;
     return;
   }
-  matches.slice(0, 20).forEach(function (product) {
+  matches.forEach(function (product) {
     const button = document.createElement("button");
     button.type = "button";
     button.className = "product-option";
@@ -388,66 +358,6 @@ function renderProductMatchListV70(matches) {
     productDropdownEl.appendChild(button);
   });
   productDropdownEl.hidden = false;
-}
-
-function renderProductMatches(query) {
-  if (!productDropdownEl) return;
-  const normalized = normalizeProductSearch(query);
-  if (!normalized) { closeProductDropdown(); return; }
-
-  // V7.0: a pure numeric query is reserved for exact Original Cost search,
-  // so it must not accidentally match digits in product IDs or names.
-  if (isOriginalCostOnlySearchV70(query)) {
-    const key = originalCostSearchKeyV70(query);
-    if (originalCostSearchCacheV70.has(key)) {
-      renderProductMatchListV70(originalCostSearchCacheV70.get(key));
-    }
-    return;
-  }
-
-  // Existing ID/name/alias search logic is intentionally unchanged.
-  const matches = productPricingList.filter(function (product) {
-    const id = product.normalizedId || "";
-    const name = product.normalizedName || "";
-    const aliases = product.compatibleIds || [id];
-    const idWithoutPrefix = aliases.map(value => value.replace(/^[A-Z]{2}/, ""));
-    return aliases.some(value => value.startsWith(normalized)) ||
-      idWithoutPrefix.some(value => value.startsWith(normalized)) ||
-      name.includes(normalized);
-  }).slice(0, 20);
-
-  renderProductMatchListV70(matches);
-}
-
-async function handleOriginalCostSearchV70(sourceInput) {
-  const queryValue = sourceInput ? sourceInput.value : "";
-  const key = originalCostSearchKeyV70(queryValue);
-  if (!key) return false;
-
-  const seq = ++originalCostSearchSequenceV70;
-  if (originalCostSearchCacheV70.has(key)) {
-    renderProductMatchListV70(originalCostSearchCacheV70.get(key));
-    return true;
-  }
-
-  if (productDropdownEl) {
-    productDropdownEl.innerHTML = '<div class="product-option-empty">正在搜索原成本 / Searching Original Cost…</div>';
-    productDropdownEl.hidden = false;
-  }
-
-  try {
-    const matches = await fetchProductsByOriginalCostV70(queryValue);
-    if (seq !== originalCostSearchSequenceV70) return true;
-    originalCostSearchCacheV70.set(key, matches);
-    renderProductMatchListV70(matches);
-  } catch (error) {
-    if (seq !== originalCostSearchSequenceV70) return true;
-    if (productDropdownEl) {
-      productDropdownEl.innerHTML = '<div class="product-option-empty">原成本搜索暂时无法读取 / Original Cost search unavailable</div>';
-      productDropdownEl.hidden = false;
-    }
-  }
-  return true;
 }
 
 function resolveProductInputFromMemory(normalized, sourceInput) {
@@ -482,19 +392,6 @@ async function handleProductSearchInput(sourceInput) {
     retailInput.value = "";
     livePriceEl.value = "";
     calculate();
-    return;
-  }
-
-  // V7.0 / Import V21.8 semantics: pure numeric input means exact Original Cost only.
-  // Examples: 120 matches 120 / 120.00, but never 1200 or 1201. Currency is ignored.
-  if (isOriginalCostOnlySearchV70(sourceInput.value)) {
-    if (selectedProduct) {
-      setProductMode(null);
-      retailInput.value = "";
-      livePriceEl.value = "";
-      calculate();
-    }
-    await handleOriginalCostSearchV70(sourceInput);
     return;
   }
 
@@ -549,7 +446,7 @@ function formatIDRCompact(value) {
 }
 
 function formatForeignPrice(currency, value) {
-  // V7.0: MYR/TWD are already named in the currency selector, so the large
+  // V6.9: MYR/TWD are already named in the currency selector, so the large
   // number does not repeat RM or NT$. This prevents high values being clipped.
   if (currency === "MYR") {
     return Number(value || 0).toLocaleString("en-MY", {
@@ -671,7 +568,7 @@ async function loadExchangeRates() {
   calculate();
 }
 
-// Indonesia inland estimate V7.0.
+// Indonesia inland estimate V6.9.
 // Reference model for large-cargo pre-sale quoting. J&T Cargo's official checker uses
 // origin, destination, weight and dimensions; this static GitHub Pages app has no live tariff API.
 // Cargo volumetric weight uses L*W*H/5000. Rates below are conservative market-reference bands,
@@ -697,7 +594,7 @@ function formatIndonesiaSeaInput() {
 }
 
 
-// V7.0: exact 5-digit Indonesia Postcode -> province detection.
+// V6.9: exact 5-digit Indonesia Postcode -> province detection.
 // No broad numeric ranges are used. A national postcode dataset is loaded once,
 // converted to an exact postcode->province map, then cached on the device.
 const POSTCODE_PROVINCE_MAP = {
@@ -739,7 +636,7 @@ const PROVINCE_CODE_MAP = {
 };
 
 
-// V7.0: representative postcode used only when the presenter manually changes region.
+// V6.9: representative postcode used only when the presenter manually changes region.
 // A real customer postcode entered by the user still takes priority and is precisely detected.
 const REGION_DEFAULT_POSTCODE = {
   JAKARTA:"10310", BANTEN:"15111", WEST_JAVA:"16110", CENTRAL_JAVA:"50111", YOGYAKARTA:"55111", EAST_JAVA:"60111",
@@ -884,7 +781,7 @@ function calculateIndonesiaShipping() {
   const billKg = Math.max(chargeKg, z[1]);
   let inlandIdr = z[0] * billKg;
 
-  // V7.0: region-based commercial safety buffer for pre-sale quotes.
+  // V6.9: region-based commercial safety buffer for pre-sale quotes.
   // This buffer is NOT an official tax/fee. It protects against inland cargo price variation,
   // handling and other possible surcharges before the logistics company confirms the final charge.
   const BUFFER_15 = new Set(["JAKARTA","BANTEN","WEST_JAVA","CENTRAL_JAVA","YOGYAKARTA","EAST_JAVA"]);
@@ -919,7 +816,7 @@ function calculateIndonesiaShipping() {
   note.innerHTML = "J&T Cargo 市场参考估算，不是 J&T 官方实时报价。" + pc + " 实际收费以物流公司确认为准。<br>Anggaran rujukan pasaran J&T Cargo, bukan kadar rasmi masa nyata. Caj sebenar tertakluk kepada pengesahan syarikat logistik.";
 }
 
-// Taiwan freight estimate V7.0. 3-digit district prefixes are sufficient for city/county routing.
+// Taiwan freight estimate V6.9. 3-digit district prefixes are sufficient for city/county routing.
 const TW_PREFIX = {"100":"TAIPEI","103":"TAIPEI","104":"TAIPEI","105":"TAIPEI","106":"TAIPEI","108":"TAIPEI","110":"TAIPEI","111":"TAIPEI","112":"TAIPEI","114":"TAIPEI","115":"TAIPEI","116":"TAIPEI","200":"KEELUNG","201":"KEELUNG","202":"KEELUNG","203":"KEELUNG","204":"KEELUNG","205":"KEELUNG","206":"KEELUNG","207":"NEW_TAIPEI","208":"NEW_TAIPEI","220":"NEW_TAIPEI","221":"NEW_TAIPEI","222":"NEW_TAIPEI","223":"NEW_TAIPEI","224":"NEW_TAIPEI","226":"NEW_TAIPEI","231":"NEW_TAIPEI","232":"NEW_TAIPEI","233":"NEW_TAIPEI","234":"NEW_TAIPEI","235":"NEW_TAIPEI","236":"NEW_TAIPEI","237":"NEW_TAIPEI","238":"NEW_TAIPEI","239":"NEW_TAIPEI","241":"NEW_TAIPEI","242":"NEW_TAIPEI","243":"NEW_TAIPEI","244":"NEW_TAIPEI","247":"NEW_TAIPEI","248":"NEW_TAIPEI","249":"NEW_TAIPEI","260":"YILAN","300":"HSINCHU","302":"HSINCHU","320":"TAOYUAN","330":"TAOYUAN","350":"MIAOLI","400":"TAICHUNG","500":"CHANGHUA","540":"NANTOU","600":"CHIAYI","630":"YUNLIN","700":"TAINAN","800":"KAOHSIUNG","900":"PINGTUNG","950":"TAITUNG","970":"HUALIEN"};
 const TW_DEFAULT_PC={KAOHSIUNG:"800",TAINAN:"700",CHIAYI:"600",YUNLIN:"630",CHANGHUA:"500",TAICHUNG:"400",NANTOU:"540",MIAOLI:"350",HSINCHU:"300",TAOYUAN:"330",NEW_TAIPEI:"220",TAIPEI:"100",KEELUNG:"200",YILAN:"260",HUALIEN:"970",TAITUNG:"950",PINGTUNG:"900",ISLANDS:"880"};
 // Planning rates in TWD/kg and minimum chargeable kg; conservative commercial estimates, not carrier tariffs.
@@ -1048,7 +945,7 @@ document.querySelectorAll("#indonesiaShipping input, #indonesiaShipping select")
 
 const indoPostcodeInput = document.getElementById("indoPostcode");
 if (indoPostcodeInput) {
-  // V7.0: tap/focus selects the whole postcode for one-step replace/delete.
+  // V6.9: tap/focus selects the whole postcode for one-step replace/delete.
   indoPostcodeInput.addEventListener("focus", function () { this.select(); });
   indoPostcodeInput.addEventListener("click", function () { this.select(); });
   indoPostcodeInput.addEventListener("input", function () {
@@ -1184,7 +1081,7 @@ async function startCalculator() {
   resetCurrencyToDefault();
   resetCalculator();
   loadExchangeRates();
-  // V7.0: hydrate last successful safe product pricing immediately, then refresh cloud data in background.
+  // V6.9: hydrate last successful safe product pricing immediately, then refresh cloud data in background.
   hydrateProductPricingCache();
   setTimeout(function () { loadProductPricing(true).catch(function () {}); }, 50);
 }
